@@ -1,7 +1,7 @@
 /*!
  * @name Tez.js
  * @description Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and Class Manager
- * @version v1.0
+ * @version v1.1
  * @author @dalisoft (https://github.com/dalisoft)
  * @license Apache 2.0
  */
@@ -23,7 +23,7 @@
 		@constructor Worker
 		@description Use worker
 		 */
-		var MAX_WORKER_THREAD = 2,
+		var MAX_WORKER_THREAD = Tez.MAX_WORKER_THREAD || 2,
 		CURRENT_WORKER_THREAD = 0,
 		LIST_WORKER_THREAD = [],
 		ARRAY_SLICE = [].slice,
@@ -374,12 +374,12 @@
 		};
 		Tez.Collector = {
 			DOMNode: {
-				props: function (a) {
-					var _a = a._collectedProps || {},
+				attrs: function (a) {
+					var _a = a._collectedattrs || {},
 					attr = ARRAY_SLICE.call(a.attributes || []).map(function (atr) {
 							_a[atr.name] = atr.value;
 						});
-					a._collectedProps = _a;
+					a._collectedattrs = _a;
 					return _a;
 				},
 				styles: function (a) {
@@ -443,105 +443,128 @@
 			}
 			return null;
 		};
-		Tez.domClass = function (node) {
+		Tez.replaceChildrenByDiff = function _rchd(_attrs, _vattrs, _childs, _childs2) {
+			var _store = [];
+			var i = 0,
+			_max = Math.max(_childs.length, _childs2.length);
+			if (_childs.length > 0) {
+				while (i < _max) {
+					if (_childs[i] && !_childs2[i]) {
+						_store.push({
+							index: i,
+							diff: false,
+							virtual: _childs[i],
+							real: 'append'
+						});
+					} else if (_childs2[i] && ((_childs[i] && _childs[i]._remove) || !_childs[i])) {
+						_store.push({
+							index: i,
+							diff: false,
+							virtual: 'append',
+							real: _childs2[i]
+						});
+					} else if (_childs[i] && _childs[i].isEqualNode(_childs2[i]) === false) {
+						_store.push({
+							index: i,
+							diff: true,
+							virtual: _childs[i],
+							real: _childs2[i]
+						});
+					}
+					i++;
+				}
+				_store.map(function (item) {
+					var i = item.index,
+					pi = i - 1,
+					ni = i + 1,
+					_tmp,
+					vr = item.virtual,
+					rr = item.real;
+					if (!item.diff && rr === 'append') {
+						_tmp = _childs2[ni];
+						if (_tmp) {
+							_tmp.parentNode.insertBefore(vr, _tmp);
+						} else {
+							_tmp = _childs2[0];
+							if (_tmp) {
+								_tmp.parentNode.appendChild(vr);
+							}
+						}
+					} else if (!item.diff && vr === 'append') {
+						_tmp = rr;
+						_tmp.parentNode.removeChild(_tmp);
+
+					} else if (item.diff) {
+						_tmp = rr;
+						_rchd(rr, vr, ARRAY_SLICE.call(vr.children), ARRAY_SLICE.call(rr.children));
+					}
+				});
+			} else if (_attrs.innerHTML !== _vattrs.innerHTML) {
+				_attrs.innerHTML = _vattrs.innerHTML;
+			} else if (_attrs.style.cssText !== _vattrs.style.cssText) {
+				_attrs.style.cssText = _vattrs.style.cssText;
+			} else if (_attrs && _attrs.parentNode) {
+				_attrs.parentNode.replaceChild(_vattrs, _attrs);
+			}
+		};
+		Tez.domClass = function (node, vars) {
+			this._vars = vars = vars || {};
 			var _opts = this._opt = {};
 			this._node = node;
 			this._vnode = this._node.cloneNode(true);
 			this._nodeElem = this._vnode;
+			if (vars.content) {
+				this.setContent(vars.content);
+			}
+			if (vars.attrs) {
+				this.setattrs(vars.attrs);
+			}
+			if (vars.styling) {
+				this.setStyling(vars.styling);
+			}
 			return this;
 		};
 		Tez.domClass.prototype = {
 			render: function () {
 				var _dn = Tez.Collector.DOMNode;
-				var _vprops = _dn.props(this._nodeElem);
-				var _props = _dn.props(this._node);
-				var _diff = Tez.DiffManager(_vprops, _props);
+				var _vattrs = _dn.attrs(this._nodeElem);
+				var _attrs = _dn.attrs(this._node);
+				var _diff = Tez.DiffManager(_vattrs, _attrs);
 				if (_diff) {
 					for (var p in _diff) {
-						this._node.setAttribute(p, _vprops[p] || _props[p]);
+						this._node.setAttribute(p, _vattrs[p] || _attrs[p]);
 					}
 				}
-				_vprops = _dn.styles(this._nodeElem);
-				_props = _dn.styles(this._node);
-				_diff = Tez.DiffManager(_vprops, _props);
+				_vattrs = _dn.styles(this._nodeElem);
+				_attrs = _dn.styles(this._node);
+				_diff = Tez.DiffManager(_vattrs, _attrs);
 				if (_diff) {
 					for (var p in _diff) {
-						this._node.style[p] = _vprops[p] || _props[p];
+						this._node.style[p] = _vattrs[p] || _attrs[p];
 					}
 				}
-				_vprops = _dn.content(this._nodeElem);
-				_props = _dn.content(this._node);
-				_diff = Tez.DiffManager(_vprops, _props);
+				_vattrs = _dn.content(this._nodeElem);
+				_attrs = _dn.content(this._node);
+				_diff = Tez.DiffManager(_vattrs, _attrs);
 				if (_diff) {
-					var _childs = ARRAY_SLICE.call(_vprops.children),
-					_childs2 = ARRAY_SLICE.call(_props.children);
-					var _store = [];
-					var i = 0,
-					_max = Math.max(_childs.length, _childs2.length);
-					while (i < _max) {
-						if (_childs[i] && !_childs2[i]) {
-							_store.push({
-								index: i,
-								diff: false,
-								virtual: _childs[i],
-								real: 'append'
-							});
-						} else if (_childs2[i] && ((_childs[i] && _childs[i]._remove) || !_childs[i])) {
-							_store.push({
-								index: i,
-								diff: false,
-								virtual: 'append',
-								real: _childs2[i]
-							});
-						} else if (_childs[i] && _childs[i].isEqualNode(_childs2[i]) === false) {
-							_store.push({
-								index: i,
-								diff: true,
-								virtual: _childs[i],
-								real: _childs2[i]
-							});
-						}
-						i++;
-					}
-					_store.map(function (item) {
-						var i = item.index,
-						pi = i - 1,
-						ni = i + 1,
-						_tmp,
-						vr = item.virtual,
-						rr = item.real;
-						if (!item.diff && rr === 'append') {
-							_tmp = _childs2[ni];
-							if (_tmp) {
-								_tmp.parentNode.insertBefore(vr, _tmp);
-							} else {
-								_tmp = _childs2[0];
-								if (_tmp) {
-									_tmp.parentNode.appendChild(vr);
-								}
-							}
-						} else if (!item.diff && vr === 'append') {
-							_tmp = rr;
-							_tmp.parentNode.removeChild(_tmp);
-
-						} else if (item.diff) {
-							_tmp = rr;
-							_tmp.parentNode.replaceChild(vr, _tmp);
-						}
-					});
+					var _childs = ARRAY_SLICE.call(_vattrs.children),
+					_childs2 = ARRAY_SLICE.call(_attrs.children);
+					Tez.replaceChildrenByDiff(_attrs, _vattrs, _childs, _childs2);
 				}
 				return this;
 			},
-			setProps: function (_props) {
-				for (var p in _props) {
-					this._nodeElem.setAttribute(p, _props[p]);
+			setattrs: function (_attrs) {
+				for (var p in _attrs) {
+					this._nodeElem.setAttribute(p, _attrs[p]);
 				}
+				this._vars.attrs = _attrs;
 				return this.render();
 			},
 			setStyling: function (_styles) {
 				for (var p in _styles) {
 					this._nodeElem.style[p] = _styles[p];
 				}
+				this._vars.styling = _styles;
 				return this.render();
 			},
 			setContent: function (contents) {
@@ -567,6 +590,7 @@
 						_self._nodeElem.innerHTML = content;
 					}
 				});
+				this._vars.content = contents;
 				return this.render();
 			}
 		};
