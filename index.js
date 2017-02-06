@@ -23,7 +23,7 @@
 		@constructor Worker
 		@description Use worker
 		 */
-		var MAX_WORKER_THREAD = Tez.MAX_WORKER_THREAD || 2,
+		var MAX_WORKER_THREAD = 2,
 		CURRENT_WORKER_THREAD = 0,
 		LIST_WORKER_THREAD = [],
 		ARRAY_SLICE = [].slice,
