@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Tez.js - Simple Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<style>
+html, body {
+	font-family: Helvetica Neue, Segoe UI Light, Arial;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+.ball {
+	width: 7.7vw;
+	height: 14vh;
+	background: #0cf;
+	border-radius: 50%;
+	display: inline-block;
+}
+.container {
+	padding: 15px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="ball"></div>
+<div class="ball"></div>
+<div class="ball ball3"></div>
+<div class="ball"></div>
+<div class="ball"></div>
+<div class="ball"></div>
+<div class="ball"></div>
+<div class="ball"></div>
+<h1>Tez.js</h1>
+<p>Simple demo use of <code>Tez.js (setTweenableLets)</code></p>
+</div>
+<script src="../index.js"></script>
+<script>
+var body = document.body;
+
+// Color value tween class
+var bgColor = Tez.TweenManager([0, 204, 255], [255, 204, 0]);
+
+// Easings function
+
+var _curveBounceIO = function (k) {
+
+			if (k < (1 / 2.75)) {
+
+				return 7.5625 * k * k;
+
+			} else if (k < (2 / 2.75)) {
+
+				return 7.5625 * (k -= (1.5 / 2.75)) * k + 0.75;
+
+			} else if (k < (2.5 / 2.75)) {
+
+				return 7.5625 * (k -= (2.25 / 2.75)) * k + 0.9375;
+
+			} else {
+
+				return 7.5625 * (k -= (2.625 / 2.75)) * k + 0.984375;
+
+			}
+
+		};
+
+// Demo class
+var BgChange = new Tez.tezClass({
+		setInitLets: function () {
+			this.lets = {
+				x: 0,
+				y: 0
+			};
+		},
+		setTweenableLets: function () {
+			this.lets2 = {
+				x: 50,
+				y: 50,
+				bg: bgColor
+			};
+			this.tweenable = {
+				startTime: function (node, index) {
+					return (this.mountedNodes.length - index) * 500;
+				},
+				roundLets: {
+					bg: true
+				},
+				duration: function (node, index) {
+					return (index + 1) * 1000;
+				},
+				curve: _curveBounceIO
+			};
+		},
+		render: (node, lets, opts, index, elapsed) => {
+			const {
+				x,
+				y,
+				bg
+			} = lets;
+			index = index + 1;
+			node.style.backgroundColor = `rgb( ${ bg } )`;
+			node.style.transform = `translate3d(${ x * index }%, ${ y * index }%, 0px)`;
+		}
+	}).mountNode('.ball').apply();
+</script>
+</body>
+</html>
