@@ -22,6 +22,7 @@ Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and 
 * `DiffManager`
 * `Collector`
 * `domClass`
+* `tezClass`
 
 # Compatibility
 * Android 5.1+
