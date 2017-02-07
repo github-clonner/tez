@@ -1,14 +1,14 @@
 /*!
  * @name Tez.js
  * @description Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and Class Manager
- * @version v1.1.2.3
+ * @version v1.1.2.4
  * @author @dalisoft (https://github.com/dalisoft)
  * @license Apache 2.0
  */
 
 (function (root, factory) {
 	if (typeof define === "function") {
-		define([], () => {
+		define([], function () {
 			return factory.call(root);
 		});
 	} else if (typeof module !== "undefined") {
@@ -23,64 +23,71 @@
 		@constructor Worker
 		@description Use worker
 		 */
-		var MAX_WORKER_THREAD = 2,
+		var ROOT = this,
+		MAX_WORKER_THREAD = 2,
 		CURRENT_WORKER_THREAD = 0,
 		LIST_WORKER_THREAD = [],
 		ARRAY_SLICE = [].slice,
-		FUNC_STR = Function.toString;
+		FUNC_STR = Function.toString,
+		WORKER_SUPPORT = ROOT.Worker !== undefined;
+
 		var setWorker = function (force) {
 			this._force = force;
 			this._worker = null;
 			this._id = 0;
 			return this;
 		};
-		var p = setWorker.prototype = {
-			createBlob: function (fn) {
-				return new Worker(
-					window.URL.createObjectURL(
-						new Blob([
-								'self.onmessage = function(wrk) {' +
-								'var f = ' + FUNC_STR.call(fn) + ';' +
-								'self.postMessage(f.apply(this, wrk.data));' +
-								'};'
-							], {
-							type: 'text/javascript'
-						})))
-			},
-			call: function (fn) {
-				if (this._id >= MAX_WORKER_THREAD && this._force) {
-					LIST_WORKER_THREAD.shift().close();
+		if (WORKER_SUPPORT) {
+			var p = setWorker.prototype = {
+				createBlob: function (fn) {
+					return new Worker(
+						window.URL.createObjectURL(
+							new Blob([
+									'self.onmessage = function(wrk) {' +
+									'var f = ' + FUNC_STR.call(fn) + ';' +
+									'self.postMessage(f.apply(this, wrk.data));' +
+									'};'
+								], {
+								type: 'text/javascript'
+							})))
+				},
+				call: function (fn) {
+					if (this._id >= MAX_WORKER_THREAD && this._force) {
+						LIST_WORKER_THREAD.shift().close();
+					}
+					this._fnc = fn;
+					this._worker = this.createBlob(fn);
+					this._id++;
+					LIST_WORKER_THREAD.push(this);
+					return this;
+				},
+				get: function () {
+					return this._val;
+				},
+				done: function (fn) {
+					var curr = this;
+					this._worker.addEventListener('message', function (e) {
+						if (e.data === undefined)
+							return;
+						curr._val = fn.call(curr._worker, {
+								data: e.data
+							});
+					});
+				},
+				run: function () {
+					var args = ARRAY_SLICE.call(arguments);
+					this._worker.postMessage(args);
+					this._val = args[0];
+					return this;
+				},
+				close: function () {
+					this._worker && this._worker.destroy();
+					return this;
 				}
-				this._fnc = fn;
-				this._worker = this.createBlob(fn);
-				this._id++;
-				LIST_WORKER_THREAD.push(this);
-				return this;
-			},
-			get: function () {
-				return this._val;
-			},
-			done: function (fn) {
-				var curr = this;
-				this._worker.addEventListener('message', function (e) {
-					if (e.data === undefined)
-						return;
-					curr._val = fn.call(curr._worker, {
-							data: e.data
-						});
-				});
-			},
-			run: function () {
-				var args = ARRAY_SLICE.call(arguments);
-				this._worker.postMessage(args);
-				this._val = args[0];
-				return this;
-			},
-			close: function () {
-				this._worker && this._worker.destroy();
-				return this;
-			}
-		};
+			};
+		} else {
+			console.log('Tez [FunctionManager]: Worker isn\'t supported');
+		}
 
 		/*
 		@constructor RAF
@@ -88,7 +95,9 @@
 		 */
 		var RAF_CALLS = [],
 		RAF_UPDATE = (function (win) {
-			win.requestAnimationFrame = win.requestAnimationFrame || win.setTimeout;
+			win.requestAnimationFrame = win.requestAnimationFrame || function (fn) {
+				return win.setTimeout(fn, 50 / 3);
+			};
 			var _run = "RUNNING";
 			win.requestAnimationFrame(function update() {
 				win.requestAnimationFrame(update);
