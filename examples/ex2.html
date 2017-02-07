@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Tez.js - Marked Demo Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<style>
+html, body {
+	font-family: Helvetica Neue, Segoe UI Light, Arial;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+.half {
+	width: 50%;
+	height: 100%;
+	border: none;
+	outline: none;
+	box-sizing: border-box;
+	background: #eee;
+	padding: 15px;
+}
+.container {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	display: flex;
+}
+
+.textarea-1 {
+	background: #ddd;
+	resize: none;
+}
+
+.result {
+	
+}
+</style>
+</head>
+<body>
+<div class="container">
+<textarea class="half textarea-1">
+# hello
+
+* demo is get from <a target="_blank" href="https://vuejs.org/v2/examples/index.html">Vue.js demo</a>
+</textarea>
+<div class="half result"></div>
+</div>
+<script src="https://unpkg.com/marked@0.3.6/marked.min.js"></script>
+<script src="../index.js"></script>
+<script>
+var body = document.body;
+
+var cont = body.querySelector('.container');
+var res = cont.querySelector('.result');
+var txt = cont.querySelector('.textarea-1');
+
+var _res = new Tez.domClass(res);
+var _helpers = new Tez.tezClass({
+		lets: {
+			params: {
+				sanitize: false
+			},
+			marked: function () {
+				return marked(txt.value, this.params);
+			}
+		}
+	});
+
+_helpers.on("onupdate", function () {
+	_res.setContent(this.lets.marked());
+});
+
+function _key() {
+	_helpers.dispatch("onupdate");
+	requestAnimationFrame(_key);
+}
+
+window.addEventListener('load', _key);
+</script>
+</body>
+</html>
