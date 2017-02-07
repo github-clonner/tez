@@ -1,7 +1,7 @@
 /*!
  * @name Tez.js
  * @description Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and Class Manager
- * @version v1.1
+ * @version v1.1.1
  * @author @dalisoft (https://github.com/dalisoft)
  * @license Apache 2.0
  */
@@ -517,7 +517,7 @@
 				this.setContent(vars.content);
 			}
 			if (vars.attrs) {
-				this.setattrs(vars.attrs);
+				this.setAttrs(vars.attrs);
 			}
 			if (vars.styling) {
 				this.setStyling(vars.styling);
@@ -553,7 +553,8 @@
 				}
 				return this;
 			},
-			setattrs: function (_attrs) {
+			setAttrs: function (_attrs) {
+				_attrs = Tez.extend(_attrs || this._vars.attrs);
 				for (var p in _attrs) {
 					this._nodeElem.setAttribute(p, _attrs[p]);
 				}
@@ -561,10 +562,15 @@
 				return this.render();
 			},
 			setStyling: function (_styles) {
+				_styles = Tez.extend(_styles || this._vars.styling);
 				for (var p in _styles) {
 					this._nodeElem.style[p] = _styles[p];
 				}
 				this._vars.styling = _styles;
+				return this.render();
+			},
+			setCustom: function (fn) {
+				this._nodeElem = fn.call(this, this._nodeElem);
 				return this.render();
 			},
 			setContent: function (contents) {
