@@ -1,7 +1,7 @@
 /*!
  * @name Tez.js
  * @description Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and Class Manager
- * @version v1.1.2
+ * @version v1.1.2.3
  * @author @dalisoft (https://github.com/dalisoft)
  * @license Apache 2.0
  */
@@ -398,7 +398,14 @@
 					return _o;
 				},
 				content: function (a) {
-					return a; // TO_DO: Some processing for performance
+					return {
+						html: a.innerHTML.trim(),
+						txt: a.textContent.trim(),
+						tag: a.tagName.toLowerCase(),
+						id: a.id,
+						className: a.className,
+						item: a
+					}
 				}
 			}
 		};
@@ -579,11 +586,15 @@
 				}
 				_vattrs = _dn.content(this._nodeElem);
 				_attrs = _dn.content(this._node);
+				var _it1 = _attrs.item,
+				_it2 = _vattrs.item;
+				delete _attrs.item;
+				delete _vattrs.item;
 				_diff = Tez.DiffManager(_vattrs, _attrs);
 				if (_diff) {
-					var _childs = ARRAY_SLICE.call(_vattrs.children),
-					_childs2 = ARRAY_SLICE.call(_attrs.children);
-					Tez.replaceChildrenByDiff(_attrs, _vattrs, _childs, _childs2);
+					var _childs = ARRAY_SLICE.call(_it2.children),
+					_childs2 = ARRAY_SLICE.call(_it1.children);
+					Tez.replaceChildrenByDiff(_it1, _it2, _childs, _childs2);
 				}
 				return this;
 			},
@@ -642,6 +653,7 @@
 					lets: {},
 					lets2: {},
 					_lets: {},
+					tweenable: {},
 					state: 0,
 					render: null
 				});
