@@ -1,7 +1,7 @@
 /*!
  * @name Tez.js
  * @description Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and Class Manager
- * @version v1.1.2.4
+ * @version v1.1.2.5
  * @author @dalisoft (https://github.com/dalisoft)
  * @license Apache 2.0
  */
@@ -18,6 +18,30 @@
 	}
 }
 	(this, function (undefined) {
+
+		/*
+		Polyfills
+		 */
+		if (!Array.prototype.filter) {
+			Array.prototype.filter = function (fn) {
+				var i = 0;
+				while (i < this.length) {
+					if (!fn.call(this[i], this[i], i)) {
+						this.splice(i, 1);
+					}
+				}
+				return this;
+			}
+		}
+		if (!Array.prototype.map) {
+			Array.prototype.map = function (fn, scope) {
+				var i = 0;
+				while (i < this.length) {
+					this[i] = fn.call(scope || this[i], this[i], i);
+				}
+				return this;
+			}
+		}
 
 		/*
 		@constructor Worker
@@ -678,8 +702,8 @@
 			this.lets2 = opts.lets2;
 			return this;
 		};
-		Tez.getDecPow = function (d = 4) {
-			return Math.pow(10, d);
+		Tez.getDecPow = function (d) {
+			return Math.pow(10, d || 4);
 		};
 		Tez.tezClass.prototype = {
 			apply: function () {
