@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Tez.js - Marked Demo Demo</title>
+<title>Tez.js - Marked Demo</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-<style>
+<style type="text/css">
 html, body {
 	font-family: Helvetica Neue, Segoe UI Light, Arial;
 	width: 100%;
@@ -19,21 +19,18 @@ html, body {
 	box-sizing: border-box;
 	background: #eee;
 	padding: 15px;
+	float: left;
 }
 .container {
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
-	display: flex;
+	display: block;
 }
 
 .textarea-1 {
 	background: #ddd;
 	resize: none;
-}
-
-.result {
-	
 }
 </style>
 </head>
@@ -47,7 +44,7 @@ html, body {
 <div class="half result"></div>
 </div>
 <script src="https://unpkg.com/marked@0.3.6/marked.min.js"></script>
-<script src="../index.js"></script>
+<script src="Tez.js"></script>
 <script>
 var body = document.body;
 
@@ -76,7 +73,7 @@ function _key() {
 	requestAnimationFrame(_key);
 }
 
-window.addEventListener('load', _key);
+_key();
 </script>
 </body>
 </html>
