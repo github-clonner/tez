@@ -1,7 +1,7 @@
 /*!
  * @name Tez.js
  * @description Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and Class Manager
- * @version v1.1.1
+ * @version v1.1.2
  * @author @dalisoft (https://github.com/dalisoft)
  * @license Apache 2.0
  */
@@ -488,6 +488,10 @@
 							_tmp = _childs2[0];
 							if (_tmp) {
 								_tmp.parentNode.appendChild(vr);
+							} else if (vr.rel) {
+								_attrs.appendChild(vr);
+							} else {
+								_attrs.innerHTML = vr.outerHTML;
 							}
 						}
 					} else if (!item.diff && vr === 'append') {
@@ -525,6 +529,36 @@
 			return this;
 		};
 		Tez.domClass.prototype = {
+			find: function (child) {
+				if (this._node.querySelector(child)) {
+					this._vnode = null;
+					this._nodeElem = null;
+					this._node = this._node.querySelector(child);
+					this._vnode = this._node.cloneNode(true);
+					this._nodeElem = this._vnode;
+				} else {
+					console.log('Tez [domClass]: Does not find item');
+				}
+				return this;
+			},
+			parent: function (get) {
+				var _parent = this._node.parentNode;
+				if (get && !_parent.isEqualNode(get)) {
+					while (_parent !== get) {
+						_parent = _parent.parentNode;
+					}
+				}
+				if (_parent) {
+					this._vnode = null;
+					this._nodeElem = null;
+					this._node = parentNode;
+					this._vnode = this._node.cloneNode(true);
+					this._nodeElem = this._vnode;
+				} else {
+					console.log('Tez [domClass]: Does not find item');
+				}
+				return this;
+			},
 			render: function () {
 				var _dn = Tez.Collector.DOMNode;
 				var _vattrs = _dn.attrs(this._nodeElem);
@@ -585,6 +619,7 @@
 						}
 						if (rel === 1) {
 							_self._nodeElem.appendChild(appendElem);
+							appendElem.rel = true;
 						} else if (rel === -1) {
 							var _getRI = Tez.getItemWithin(appendElem, _self._nodeElem);
 							if (_getRI && _getRI.matched) {
