@@ -1,7 +1,7 @@
 /*!
  * @name Tez.js
  * @description Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and Class Manager
- * @version v1.1.2.5
+ * @version v1.1.3.0
  * @author @dalisoft (https://github.com/dalisoft)
  * @license Apache 2.0
  */
@@ -553,10 +553,14 @@
 		};
 		Tez.domClass = function (node, vars) {
 			this._vars = vars = vars || {};
+			if (vars.quickRender === undefined) {
+				vars.quickRender = true;
+			}
 			var _opts = this._opt = {};
 			this._node = node;
 			this._vnode = this._node.cloneNode(true);
 			this._nodeElem = this._vnode;
+			this._quickRender = vars.quickRender;
 			if (vars.content) {
 				this.setContent(vars.content);
 			}
@@ -637,7 +641,7 @@
 					this._nodeElem.setAttribute(p, _attrs[p]);
 				}
 				this._vars.attrs = _attrs;
-				return this.render();
+				return this._quickRender ? this.render() : this;
 			},
 			setStyling: function (_styles) {
 				_styles = Tez.extend(_styles || this._vars.styling);
@@ -645,11 +649,11 @@
 					this._nodeElem.style[p] = _styles[p];
 				}
 				this._vars.styling = _styles;
-				return this.render();
+				return this._quickRender ? this.render() : this;
 			},
 			setCustom: function (fn) {
 				this._nodeElem = fn.call(this, this._nodeElem);
-				return this.render();
+				return this._quickRender ? this.render() : this;
 			},
 			setContent: function (contents) {
 				var _self = this;
@@ -676,7 +680,7 @@
 					}
 				});
 				this._vars.content = contents;
-				return this.render();
+				return this._quickRender ? this.render() : this;
 			}
 		};
 		Tez.tezClass = function (opts) {
