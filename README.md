@@ -25,6 +25,25 @@ Dear users, this is not framework, just library that renders diffed (patched) el
 * Call Management
 * DOM Management
 
+# Example of What it does
+```javascript
+// SuperAnimation.js is for example, but plug-in included for my private stuff
+new SuperAnimation.Tween('.container', {
+	xp: 0
+}).to({
+	xp: 200,
+	tez: {
+		render: function (node, props) {
+			node.setContent(`<div class=\"ball\" style=\"transform:translate3d(${ props.xp }px, 0px, 0px)\"></div>`); // #1
+			//node._node.innerHTML = `<div class=\"ball\" style=\"transform:translate3d(${ props.xp }px, 0px, 0px)\"></div>` #2
+		}
+	}
+}, 2000).start();
+
+```
+* \#1: Effective way changing content, redraws only changed stuffs, not entire layer or html (inner, outer) or may change html once if needed, but very fast and power effecient.
+* \#2: Default html way, innerHTML changes entire layer and redraws, this affects to performance too and this is ineffecient.
+
 # Methods
 * `FunctionManager`
 * `CompositeManager`
