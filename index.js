@@ -1,7 +1,7 @@
 /*!
  * @name Tez.js
  * @description Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and Class Manager
- * @version v1.1.3.0
+ * @version v1.1.3.1
  * @author @dalisoft (https://github.com/dalisoft)
  * @license Apache 2.0
  */
@@ -28,6 +28,8 @@
 				while (i < this.length) {
 					if (!fn.call(this[i], this[i], i)) {
 						this.splice(i, 1);
+					} else {
+						i++
 					}
 				}
 				return this;
@@ -38,6 +40,7 @@
 				var i = 0;
 				while (i < this.length) {
 					this[i] = fn.call(scope || this[i], this[i], i);
+					i++
 				}
 				return this;
 			}
@@ -261,7 +264,7 @@
 		 */
 		var Tez = {
 			FunctionManager: function (fnc, mode) {
-				this._mode = mode === "Worker" ? new setWorker(true) : mode === "raf" ? new setRAF(true) : new setFn(true);
+				this._mode = (mode === "Worker" && WORKER_SUPPORT) ? new setWorker(true) : mode === "raf" ? new setRAF(true) : new setFn(true);
 				this.m = this._mode.call(fnc);
 				return this;
 			},
@@ -286,8 +289,8 @@
 				return this;
 			},
 			plugin: function (plug) {
-				if (typeof plug === "string" && Tez.PluginManager[plug] !== undefined) {
-					this.m = Tez.PluginManager[plug].call(this, this.m);
+				if (typeof plug === "string" && Tez.PluginManager[plug] !== undefined && Tez.PluginManager[plug].fnMgr !== undefined) {
+					this.m = Tez.PluginManager[plug].fnMgr.call(this, this.m);
 				}
 				return this;
 			},
@@ -603,6 +606,12 @@
 				}
 				return this;
 			},
+			plugin: function (plug) {
+				if (typeof plug === "string" && Tez.PluginManager[plug] !== undefined && Tez.PluginManager[plug].dom !== undefined) {
+					this._vnode = Tez.PluginManager[plug].dom.call(this, this._vnode, this._node);
+				}
+				return this.render();
+			},
 			render: function () {
 				var _dn = Tez.Collector.DOMNode;
 				var _vattrs = _dn.attrs(this._nodeElem);
@@ -710,6 +719,12 @@
 			return Math.pow(10, d || 4);
 		};
 		Tez.tezClass.prototype = {
+			plugin: function (plug) {
+				if (typeof plug === "string" && Tez.PluginManager[plug] !== undefined && Tez.PluginManager[plug].tez !== undefined) {
+					Tez.PluginManager[plug].tez.call(this, this.lets, this.opts);
+				}
+				return this;
+			},
 			apply: function () {
 				var _self = this,
 				opts = _self.opts,
@@ -775,6 +790,7 @@
 				this.mountedNodes.map(function (node, index) {
 					opts.render.call(_self, node, _lets || opts.lets, opts, index);
 				});
+				opts.lets = _lets;
 				return this;
 			},
 			mountNode: function (node) {
@@ -817,6 +833,8 @@
 				while (i < this.events[event].length) {
 					if (this.events[event][i] === callback) {
 						this.events[event].splice(i, 1);
+					} else {
+						i++
 					}
 				}
 				return this;
@@ -831,7 +849,9 @@
 				this.events[event].map(function (event) {
 					event.call(_self, Tez.extend(custom, {
 							opts: opts,
-							timestamp: Date.now()
+							timestamp: Date.now(),
+							type: event,
+							target: _self
 						}));
 				});
 				return this;
