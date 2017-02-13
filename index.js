@@ -780,7 +780,7 @@
 					});
 				return this;
 			},
-			render: function (_lets) {
+			render: function (_lets, leaveLet) {
 				var _self = this,
 				opts = this.opts;
 				_lets = _lets || opts.lets;
@@ -790,7 +790,9 @@
 				this.mountedNodes.map(function (node, index) {
 					opts.render.call(_self, node, _lets || opts.lets, opts, index);
 				});
-				opts.lets = _lets;
+				if (!leaveLet) {
+					opts.lets = _lets;
+				}
 				return this;
 			},
 			mountNode: function (node) {
@@ -858,4 +860,30 @@
 			}
 		};
 		return Tez;
+	}));
+
+(function (factory) {
+	if (typeof define === "function") {
+		define(['Tez', 'SuperAnimation'], function (tez, sa) {
+			return factory(tez, sa);
+		});
+	} else if (typeof module !== "undefined") {
+		var tez = require('./Tez');
+		var sa = require('./SuperAnimation');
+		module.exports = factory(tez, sa);
+	} else if (this.Tez !== undefined && this.SuperAnimation !== undefined) {
+		factory(this.Tez, this.SuperAnimation);
+	}
+}
+	(function (tez, sajs, undefined) {
+		sajs.CustomProperties("tez", function (elem, start, end, prop, obj) {
+			var _val = end[prop] || start[prop];
+			var _domClass = new Tez.domClass(elem);
+			var _tezClass = new Tez.tezClass({
+					render: _val.render
+				}).mountNode(_domClass);
+			return function () {
+				_tezClass.render(obj, true);
+			}
+		});
 	}));
