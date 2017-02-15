@@ -1,7 +1,7 @@
 /*!
  * @name Tez.js
  * @description Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and Class Manager
- * @version v1.1.3.1
+ * @version v1.2.0.0
  * @author @dalisoft (https://github.com/dalisoft)
  * @license Apache 2.0
  */
@@ -411,7 +411,9 @@
 		Tez.Collector = {
 			DOMNode: {
 				attrs: function (a) {
-					var _a = a._collectedattrs || {},
+					if (!a)
+						return {};
+					var _a = a && a._collectedattrs || {},
 					attr = ARRAY_SLICE.call(a.attributes || []).map(function (atr) {
 							_a[atr.name] = atr.value;
 						});
@@ -419,6 +421,8 @@
 					return _a;
 				},
 				styles: function (a) {
+					if (!a)
+						return {};
 					var _o = a._collectedStyle || {},
 					_cssText = a.style.cssText;
 					if (!_cssText) {
@@ -434,6 +438,8 @@
 					return _o;
 				},
 				content: function (a) {
+					if (!a)
+						return {};
 					return {
 						html: a.innerHTML.trim(),
 						txt: a.textContent.trim(),
@@ -661,8 +667,24 @@
 				return this._quickRender ? this.render() : this;
 			},
 			setCustom: function (fn) {
-				this._nodeElem = fn.call(this, this._nodeElem);
+				fn.call(this, this._nodeElem);
 				return this._quickRender ? this.render() : this;
+			},
+			sync: function () {
+				var _dn = Tez.Collector.DOMNode;
+				var _vattrs = _dn.content(this._nodeElem);
+				var _attrs = _dn.content(this._node);
+				var _it1 = _attrs.item,
+				_it2 = _vattrs.item;
+				delete _attrs.item;
+				delete _vattrs.item;
+				var _diff = Tez.DiffManager(_vattrs, _attrs);
+				if (_diff) {
+					var _childs = ARRAY_SLICE.call(_it2.children),
+					_childs2 = ARRAY_SLICE.call(_it1.children);
+					Tez.replaceChildrenByDiff(_it2, _it1, _childs2, _childs);
+				}
+				return this;
 			},
 			setContent: function (contents) {
 				var _self = this;
@@ -820,15 +842,15 @@
 				});
 				return this;
 			},
-			on: function (event, callback) {
+			on: function (event, callback, unshift) {
 				if (!this.events[event]) {
 					this.events[event] = [];
 				}
-				this.events[event].push(callback);
+				this.events[event][unshift ? 'unshift' : 'push'](callback);
 				return this;
 			},
 			off: function (event, callback) {
-				if (!this.events.length) {
+				if (!this.events[event].length) {
 					delete this.events[event];
 				}
 				var i = 0;
@@ -886,4 +908,177 @@
 				_tezClass.render(obj, true);
 			}
 		});
+	}));
+
+(function (factory) {
+	if (typeof define === "function") {
+		define(['Tez'], function (tez) {
+			return factory.call(this, tez);
+		});
+	} else if (typeof module !== "undefined") {
+		var tez = require('./Tez');
+		module.exports = factory.call(typeof(exports) !== "undefined" ? exports : this, tez);
+	} else if (this.Tez !== undefined) {
+		this.TD = factory.call(this, this.Tez);
+	}
+}
+	(function (Tez, undefined) {
+		var _arr = Array.prototype,
+		_slice = _arr.slice;
+		var _each = function (t, fn, scope) {
+			if (typeof(t) === "object") {
+				var i;
+				if (t.length) {
+					i = 0;
+					while (i < t.length) {
+						fn.call(scope || t[i], t[i], i);
+						i++;
+					}
+				} else {
+					for (i in t) {
+						fn.call(scope || t[i], t[i], i);
+					}
+				}
+			}
+		};
+		var TD = function TD(query, context) {
+			context = context || document;
+			if (!(this instanceof TD)) {
+				return new TD(query, context);
+			}
+			if (query instanceof TD) {
+				query = query.get();
+			}
+			query = _slice.call((typeof(query) === "string") ? context.querySelectorAll(query) : query.length && query.push ? query : [query]);
+			this.domc = [];
+			_each(query, function (item, i) {
+				this[i] = item;
+				this.domc[i] = new Tez.domClass(item);
+			}, this);
+			this.length = query.length;
+			return this;
+		};
+		TD.prototype = {
+			each: function (fn) {
+				_each(this, fn, this);
+				return this.virtualsync();
+			},
+			domEach: function (fn) {
+				_each(this.domc, fn, this);
+				return this;
+			},
+			virtualsync: function () {
+				return this.domEach(function (item) {
+					item.sync();
+				});
+			},
+			attr: function (name, value) {
+				if (typeof(name) === "string") {
+					if (typeof(value) === "string") {
+						return this.domEach(function (item) {
+							item.setAttrs(Object.defineProperty({}, name, {
+									value: value
+								}));
+						});
+					} else {
+						return this[0].getAttribute(name);
+					}
+				} else if (typeof(name) === "object") {
+					return this.domEach(function (item) {
+						item.setAttrs(name);
+					});
+				}
+				return this;
+			},
+			css: function (name, value) {
+				if (typeof(name) === "string") {
+					if (typeof(value) === "string") {
+						return this.domEach(function (item) {
+							item.setStyling(Object.defineProperty({}, name, {
+									value: value
+								}));
+						});
+					} else {
+						return this[0].getAttribute(name);
+					}
+				} else if (typeof(name) === "object") {
+					return this.domEach(function (item) {
+						item.setStyling(name);
+					});
+				}
+				return this;
+			},
+			on: function (ev, fn) {
+				return this.each(function (item) {
+					item.addEventListener(ev, fn);
+				});
+			},
+			off: function (ev, fn) {
+				return this.each(function (item) {
+					item.removeEventListener(ev, fn);
+				});
+			},
+			laggy: function (fn, ms) {
+				var _self = this;
+				setTimeout(function () {
+					fn.call(_self);
+				}, ms || 50);
+				return this;
+			},
+			_prevDur: 50,
+			animate: function (props, options = {}) {
+				var {
+					duration = 1000,
+					ease = 'ease-in-out',
+					queue = true,
+					callback
+				} = options;
+				var _laggySec = this._prevDur || 50;
+				this._prevDur += queue ? duration : 0;
+				return this.laggy(function () {
+					this.virtualsync().css({
+						transitionDuration: duration + 'ms',
+						transitionTimingFunction: ease
+					}).laggy(function () {
+						this.css(props);
+					}).on('transitionend', callback && callback.bind(this));
+				}, _laggySec);
+			},
+			html: function (value) {
+				if (value !== undefined) {
+					return this.domEach(function (item, i) {
+						item && item.setContent(value);
+					});
+				} else {
+					return this[0].innerHTML;
+				}
+			},
+			text: function (value) {
+				if (value !== undefined) {
+					return this.domEach(function (item, i) {
+						item.setContent(value);
+					});
+				} else {
+					return this[0].textContent || this[0].innerText;
+				}
+			},
+			append: function (html) {
+				return this.domEach(function (item) {
+					item.setCustom(function (node) {
+						if (typeof(html) === "string") {
+							node.innerHTML += html;
+						} else if (html && html.nodeType) {
+							node.appendChild(html);
+						}
+					});
+				})
+
+			},
+			remove: function () {
+				return this.each(function (item) {
+					item.parentNode.removeChild(html);
+				});
+			}
+		};
+		return TD;
 	}));
