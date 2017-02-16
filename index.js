@@ -1,7 +1,7 @@
 /*!
  * @name Tez.js
  * @description Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and Class Manager
- * @version v1.2.2.0
+ * @version v1.2.3.0
  * @author @dalisoft (https://github.com/dalisoft)
  * @license Apache 2.0
  */
@@ -1040,7 +1040,7 @@
 			},
 			virtualsync: function () {
 				return this.domEach(function (item) {
-					item.sync();
+					item && item.sync();
 				});
 			},
 			attr: function (name, value) {
@@ -1091,12 +1091,13 @@
 			},
 			laggy: function (fn, ms) {
 				var _self = this;
+				if (!fn) return this;
 				setTimeout(function () {
 					fn.call(_self);
 				}, ms || 50);
 				return this;
 			},
-			_prevDur: 50,
+			_prevDur: 0,
 			animate: function (props, options = {}) {
 				var {
 					duration = 1000,
@@ -1104,7 +1105,7 @@
 					queue = true,
 					complete
 				} = options;
-				var _laggySec = this._prevDur || 50;
+				var _laggySec = this._prevDur;
 				this._prevDur += queue ? duration : 0;
 				return this.laggy(function () {
 					this.virtualsync()
@@ -1115,7 +1116,7 @@
 					.laggy(function () {
 						this.css(props);
 					})
-					.on('transitionend', complete && complete.bind(this));
+					.laggy(complete, duration);
 				}, _laggySec);
 			},
 			html: function (value) {
@@ -1138,7 +1139,7 @@
 			},
 			append: function (html) {
 				return this.virtualsync().domEach(function (item) {
-					item.setCustom(function (node) {
+					item && item.setCustom(function (node) {
 						if (typeof(html) === "string") {
 							node.innerHTML += html;
 						} else if (html && html.nodeType) {
