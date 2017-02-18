@@ -1,7 +1,7 @@
 /*!
  * @name Tez.js
  * @description Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and Class Manager
- * @version v1.2.3.0
+ * @version v2.1.3.0
  * @author @dalisoft (https://github.com/dalisoft)
  * @license Apache 2.0
  */
@@ -19,33 +19,7 @@
 }
 	(this, function (undefined) {
 
-		/*
-		Polyfills
-		 */
-		if (!Array.prototype.filter) {
-			Array.prototype.filter = function (fn) {
-				var i = 0;
-				while (i < this.length) {
-					if (!fn.call(this[i], this[i], i)) {
-						this.splice(i, 1);
-					} else {
-						i++
-					}
-				}
-				return this;
-			}
-		}
-		if (!Array.prototype.map) {
-			Array.prototype.map = function (fn, scope) {
-				var i = 0;
-				while (i < this.length) {
-					this[i] = fn.call(scope || this[i], this[i], i);
-					i++
-				}
-				return this;
-			}
-		}
-
+		var Tez = {};
 		/*
 		@constructor Worker
 		@description Use worker
@@ -328,157 +302,18 @@
 			return new Tez.FunctionManager(fn)
 			.run(args);
 		};
-		Tez.DOMManager = function (node) {
-			this.node = node;
-			return this;
-		};
-		Tez.TweenManager = function (a, b) {
-			var _isFunc = typeof(b) === "function";
-			var _isArray = b && b.push && b.slice;
-			var _isObj = (!_isArray && typeof(b) === "object");
-			var _isNum = (!_isArray && !_isObj) && typeof(b) === "number";
-			var _isStr = !_isNum && typeof(b) === "string";
-			var _obj = {},
-			_arr = [],
-			_num = 0;
-			return function (t) {
-				if (_isFunc) {
-					return b(t);
-				} else if (_isArray) {
-					return (_arr = b.map(function (v2, i) {
-								if (typeof v2 === "number") {
-									return a[i] + (v2 - a[i]) * t;
-								} else if (typeof v2 === "function") {
-									return v2(t);
-								}
-							}));
-				} else if (_isObj) {
-					for (var p in b) {
-						if (typeof b[p] === "number") {
-							_obj[p] = a[p] + (b[p] - a[p]) * t;
-						} else if (typeof b[p] === "function") {
-							_obj[p] = b[p](t);
-						}
-					}
-					return _obj;
-				} else if (_isNum) {
-					return a + (b - a) * t;
-				}
+		var attrs = function (a) {
+			if (!a)
+				return {};
+			var _a = {},
+			attributes = a.attributes;
+			for (var i = 0, atr, len = attributes.length; i < len; i++) {
+				atr = attributes[i];
+				_a[atr.name] = atr.value;
 			}
-		};
-		Tez.DiffManager = function _rdh(a, b) {
-			if ((a && b) && (!a.nodeType && !b.nodeType) && typeof a === "object" && typeof b === "object") {
-				var _keys = (b && b.push && b.slice ? b : b && Object.keys(b)) || [],
-				_keysA = (a && a.push && a.slice ? a : a && Object.keys(a)) || [],
-				i = 1,
-				_diff = {},
-				_len = _keys && _keys.length,
-				_extract = ((a && _keys.length || 0) > (b && _keysA.length || 0) ? b : a) || _diff;
-				if (_keys.length || _keysA.length) {
-					for (var p in _extract) {
-						if (_rdh(a[p], b[p])) {
-							_diff[p] = [a[p], b[p]];
-							i++;
-						}
-					}
-				}
-				return Object.keys(_diff)
-				.length ? _diff : i > 1;
-			} else {
-				return a !== b && [a, b];
-			}
-		};
-		Tez.DOMManager.prototype = {
-			getNode: function () {
-				return this.node;
-			},
-			logic: function (fn) {
-				this._logic = new Tez.LogicManager(fn);
-				return this;
-			},
-			logicArg: function (arg) {
-				this._logic.run.call(this._logic, arg);
-				return this;
-			},
-			logicMsg: function (fn) {
-				this._logic && this._logic.onMessage(fn.call(this, this.node));
-				return this;
-			},
-			getLogic: function () {
-				return this._logic;
-			},
-			composite: function (fn) {
-				this._composite = new Tez.CompositeManager(fn.bind(this));
-				return this;
-			},
-			compositeArg: function (arg) {
-				this._composite.run.call(this._composite, arg);
-				return this;
-			},
-			compositeMsg: function (fn) {
-				this._composite && this._composite.onMessage(fn.call(this, this.node));
-				return this;
-			},
-			getComposite: function () {
-				return this._composite;
-			}
-		};
-		Tez.Collector = {
-			DOMNode: {
-				attrs: function (a) {
-					if (!a)
-						return {};
-					var _a = a && a._collectedattrs || {},
-					attr = ARRAY_SLICE.call(a.attributes || [])
-						.map(function (atr) {
-							_a[atr.name] = atr.value;
-						});
-					a._collectedattrs = _a;
-					return _a;
-				},
-				styles: function (a) {
-					if (!a)
-						return {};
-					var _o = a._collectedStyle || {},
-					_cssText = a.style.cssText;
-					if (!_cssText) {
-						return _o;
-					}
-					var rpl = _cssText.split(";")
-						.filter(function (p) {
-							return p && p.length && p.indexOf(":") > -1;
-						})
-						.map(function (p, i) {
-							var p2 = p.split(":");
-							_o[p2[0].trim()] = p2[1].trim();
-						});
-					a._collectedStyle = _o;
-					return _o;
-				},
-				content: function (a) {
-					if (!a)
-						return {};
-					return {
-						html: a.innerHTML.trim(),
-						txt: a.textContent.trim(),
-						tag: a.tagName.toLowerCase(),
-						id: a.id,
-						className: a.className,
-						item: a
-					}
-				}
-			}
-		};
-		var _addRelMgr = Tez.addRelativeManager = function (content, fn) {
-			if (content.indexOf("=") > -1 && content.charAt(0) === "+") {
-				fn(content.substr(2), 1);
-			} else if (content.indexOf("=") > -1 && content.charAt(0) === "-") {
-				fn(content.substr(2), -1);
-			} else {
-				fn(content, 0);
-			}
-		};
-		Tez.getItemWithin = function _giw(item, parent) {
+			return JSON.stringify(_a);
+		}
+		var _getItem = function _giw(item, parent) {
 			if (item.isEqualNode(parent)) {
 				return item;
 			}
@@ -509,12 +344,20 @@
 				}
 			}
 			return null;
-		};
-		Tez.replaceChildrenByDiff = function _rchd(_attrs, _vattrs, _childs, _childs2) {
-			var _store = [];
+		}
+		var replaceChildrenByDiff = function _rchd(_attrs, _vattrs, _childs, _childs2, substore) {
+			var _store = (substore || []).concat([]);
+			if (substore) {
+				substore.splice(0, substore.length);
+			}
 			var i = 0,
-			_max = Math.max(_childs.length, _childs2.length);
-			if (_childs.length > 0) {
+			_max = Math.max(_childs.length, _childs2.length),
+			item,
+			pi,
+			ni,
+			_tmp,
+			len;
+			if (_max) {
 				while (i < _max) {
 					if (_childs[i] && !_childs2[i]) {
 						_store.push({
@@ -523,14 +366,14 @@
 							virtual: _childs[i],
 							real: 'append'
 						});
-					} else if (_childs2[i] && ((_childs[i] && _childs[i]._remove) || !_childs[i])) {
+					} else if (_childs2[i] && !_childs[i]) {
 						_store.push({
 							index: i,
 							diff: false,
 							virtual: 'append',
 							real: _childs2[i]
 						});
-					} else if (_childs[i] && _childs[i].isEqualNode(_childs2[i]) === false) {
+					} else if (_childs[i] && _childs[i].tagName !== _childs2[i].tagName) {
 						_store.push({
 							index: i,
 							diff: true,
@@ -540,9 +383,14 @@
 					}
 					i++;
 				}
-				_store.map(function (item) {
-					var i = item.index,
-					pi = i - 1,
+			}
+			if (_store.length) {
+				var a = 0;
+				len = _store.length;
+				while (a < len) {
+					item = _store[a],
+					i = item.index;
+					var pi = i - 1,
 					ni = i + 1,
 					_tmp,
 					vr = item.virtual,
@@ -550,635 +398,193 @@
 					if (!item.diff && rr === 'append') {
 						_tmp = _childs2[ni];
 						if (_tmp) {
-							_tmp.parentNode.insertBefore(vr, _tmp);
+							_attrs.insertBefore(vr, _tmp);
 						} else {
-							_tmp = _childs2[0];
-							if (_tmp) {
-								_tmp.parentNode.appendChild(vr);
-							} else if (vr.rel) {
-								_attrs.appendChild(vr);
-							} else {
-								_attrs.innerHTML = vr.outerHTML;
-							}
+							_attrs.appendChild(vr);
 						}
 					} else if (!item.diff && vr === 'append') {
-						_tmp = rr;
-						_tmp.parentNode.removeChild(_tmp);
-
+						rr.remove();
 					} else if (item.diff) {
 						_tmp = rr;
-						_rchd(rr, vr, ARRAY_SLICE.call(vr.children), ARRAY_SLICE.call(rr.children));
+						_rchd(rr, vr, vr.children, rr.children);
 					}
-				});
+					a++;
+				}
 			} else if (_attrs.innerHTML !== _vattrs.innerHTML) {
 				_attrs.innerHTML = _vattrs.innerHTML;
 			} else if (_attrs.style.cssText !== _vattrs.style.cssText) {
 				_attrs.style.cssText = _vattrs.style.cssText;
-			} else if (_attrs && _attrs.parentNode) {
+			} else if (_attrs.tagName !== _vattrs.tagName) {
 				_attrs.parentNode.replaceChild(_vattrs, _attrs);
 			}
 		};
+		var _tmpDiv = document.createElement("div");
+		var _parseString = function (str) {
+			if (!str) {
+				return [];
+			};
+			_tmpDiv.innerHTML = str;
+			return ARRAY_SLICE.call(_tmpDiv.children);
+		};
+		var _makeNode = function (tag, css, content) {
+			if (!tag)
+				return;
+			if (!content && css) {
+				content = css;
+				css = null;
+			}
+			var _tag = document.createElement(tag);
+			if (css) {
+				_tag.style.cssText = css;
+			}
+			if (content) {
+				_tag.innerHTML = content;
+			}
+			return _tag;
+		};
+		Tez.createElement = _makeNode;
 		Tez.domClass = function (node, vars) {
 			this._vars = vars = vars || {};
 			if (vars.quickRender === undefined) {
 				vars.quickRender = true;
 			}
 			var _opts = this._opt = {};
-			this._node = node;
+			this._node = typeof(node) === "string" ? document.querySelector(node) : node.length && node[0].nodeType ? node[0] : node;
 			this._vnode = this._node.cloneNode(true);
 			this._nodeElem = this._vnode;
 			this._quickRender = vars.quickRender;
-			if (vars.content) {
-				this.setContent(vars.content);
+			this._appendStore = [];
+			this.props = {};
+			this._listOfNodes = [];
+			if (vars.styling === undefined) {
+				vars.styling = this._vnode.style.cssText;
 			}
-			if (vars.attrs) {
-				this.setAttrs(vars.attrs);
+			if (vars.attrs === undefined) {
+				vars.attrs = attrs(this._vnode);
 			}
-			if (vars.styling) {
-				this.setStyling(vars.styling);
+			if (vars.content === undefined) {
+				vars.content = this._vnode.innerHTML;
 			}
-			return this;
+			return this.render();
 		};
 		Tez.domClass.prototype = {
-			find: function (child) {
-				if (this._node.querySelector(child)) {
-					this._vnode = null;
-					this._nodeElem = null;
-					this._node = this._node.querySelector(child);
-					this._vnode = this._node.cloneNode(true);
-					this._nodeElem = this._vnode;
-				} else {
-					console.log('Tez [domClass]: Does not find item');
+			createElement: function (tag, css, content) {
+				var item,
+				appendStore = this._appendStore,
+				len = appendStore.length;
+				appendStore[len] = {
+					real: 'append',
+					virtual: (item = _makeNode(tag, css, content)),
+					diff: false,
+					index: len
+				};
+				return item;
+			},
+			setProps: function (props) {
+				for (var p in props) {
+					this.props[p] = props[p];
 				}
 				return this;
 			},
-			parent: function (get) {
-				var _parent = this._node.parentNode;
-				if (get && !_parent.isEqualNode(get)) {
-					while (_parent !== get) {
-						_parent = _parent.parentNode;
-					}
-				}
-				if (_parent) {
-					this._vnode = null;
-					this._nodeElem = null;
-					this._node = parentNode;
-					this._vnode = this._node.cloneNode(true);
-					this._nodeElem = this._vnode;
-				} else {
-					console.log('Tez [domClass]: Does not find item');
-				}
-				return this;
-			},
-			plugin: function (plug) {
-				if (typeof plug === "string" && Tez.PluginManager[plug] !== undefined && Tez.PluginManager[plug].dom !== undefined) {
-					this._vnode = Tez.PluginManager[plug].dom.call(this, this._vnode, this._node);
-				}
-				return this.render();
+			createFunction: function (fn) {
+				fn.call(this);
 			},
 			render: function () {
-				var _dn = Tez.Collector.DOMNode;
-				var _vattrs = _dn.attrs(this._nodeElem);
-				var _attrs = _dn.attrs(this._node);
-				var _diff = Tez.DiffManager(_vattrs, _attrs);
-				if (_diff) {
+				var vars = this._vars;
+				var append = this._appendStore;
+				var _listOfNodes = this._listOfNodes;
+				var _vattrs = vars.attrs;
+				var _attrs = attrs(this._node);
+				var _diff;
+				if (_attrs !== _vattrs) {
+					_diff = JSON.parse(_vattrs);
 					for (var p in _diff) {
 						this._node.setAttribute(p, _vattrs[p] || _attrs[p]);
 					}
 				}
-				_vattrs = _dn.styles(this._nodeElem);
-				_attrs = _dn.styles(this._node);
-				_diff = Tez.DiffManager(_vattrs, _attrs);
-				if (_diff) {
-					for (var p in _diff) {
-						this._node.style[p] = _vattrs[p] || _attrs[p];
+				_vattrs = vars.styling;
+				_attrs = this._node.style.cssText;
+				if (_vattrs !== _attrs) {
+					this._node.style.cssText = _vattrs;
+				}
+				_vattrs = vars.content;
+				_attrs = this._node.innerHTML;
+				for (var i = 0, len = _listOfNodes.length; i < len; i++) {
+					var idx = append.length;
+					append[idx] = {
+						virtual: _listOfNodes[i],
+						real: 'append',
+						diff: false,
+						index: idx
 					}
 				}
-				_vattrs = _dn.content(this._nodeElem);
-				_attrs = _dn.content(this._node);
-				var _it1 = _attrs.item,
-				_it2 = _vattrs.item;
-				delete _attrs.item;
-				delete _vattrs.item;
-				_diff = Tez.DiffManager(_vattrs, _attrs);
-				if (_diff) {
-					var _childs = ARRAY_SLICE.call(_it2.children),
-					_childs2 = ARRAY_SLICE.call(_it1.children);
-					Tez.replaceChildrenByDiff(_it1, _it2, _childs, _childs2);
+				if (append.length || _attrs !== _vattrs) {
+					var _it1 = this._node;
+					var _it2 = this._vnode;
+					var _childs = _parseString(_vattrs),
+					_childs2 = _parseString(_attrs);
+					replaceChildrenByDiff(_it1, _it2, _childs, _childs2, append);
 				}
+				return this;
+			},
+			setNode: function (node) {
+				this._listOfNodes.push(node);
 				return this;
 			},
 			setAttrs: function (_attrs) {
-				_attrs = Tez.extend(_attrs || this._vars.attrs);
+				var attr,
+				nattr = {},
+				_attr = JSON.parse(this._vars.attrs);
+				for (var p in _attr) {
+					if (_attr[p] !== undefined) {
+						nattr[p] = _attr[p];
+					}
+				}
 				for (var p in _attrs) {
-					this._nodeElem.setAttribute(p, _attrs[p]);
-				}
-				this._vars.attrs = _attrs;
-				return this._quickRender ? this.render() : this;
-			},
-			setStyling: function (_styles) {
-				_styles = Tez.extend(_styles || this._vars.styling);
-				for (var p in _styles) {
-					this._nodeElem.style[p] = _styles[p];
-				}
-				this._vars.styling = _styles;
-				return this._quickRender ? this.render() : this;
-			},
-			setCustom: function (fn) {
-				fn.call(this, this._nodeElem);
-				return this._quickRender ? this.render() : this;
-			},
-			sync: function () {
-				var _dn = Tez.Collector.DOMNode;
-				var _vattrs = _dn.content(this._nodeElem);
-				var _attrs = _dn.content(this._node);
-				var _it1 = _attrs.item,
-				_it2 = _vattrs.item;
-				delete _attrs.item;
-				delete _vattrs.item;
-				var _diff = Tez.DiffManager(_vattrs, _attrs);
-				if (_diff) {
-					var _childs = ARRAY_SLICE.call(_it2.children),
-					_childs2 = ARRAY_SLICE.call(_it1.children);
-					Tez.replaceChildrenByDiff(_it2, _it1, _childs2, _childs);
-				}
-				return this;
-			},
-			setContent: function (contents) {
-				var _self = this;
-				_addRelMgr(contents, function (content, rel) {
-					if (rel === 1 || rel === -1) {
-						var appendElem = document.createElement("div");
-						appendElem.innerHTML = content;
-						appendElem = appendElem.firstChild;
-						if (!appendElem) {
-							return;
-						}
-						if (rel === 1) {
-							_self._nodeElem.appendChild(appendElem);
-							appendElem.rel = true;
-						} else if (rel === -1) {
-							var _getRI = Tez.getItemWithin(appendElem, _self._nodeElem);
-							if (_getRI && _getRI.matched) {
-								/*_self._nodeElem.removeChild(_getRI.matched); // NOT WORKED WELL */
-								_getRI.matched._remove = true;
-							}
-						}
-					} else if (rel === 0) {
-						_self._nodeElem.innerHTML = content;
-					}
-				});
-				this._vars.content = contents;
-				return this._quickRender ? this.render() : this;
-			}
-		};
-		Tez.tezClass = function (opts) {
-			var _self = this;
-			this.events = {};
-			opts = Tez.extend(opts || {}, {
-					lets: {},
-					lets2: {},
-					_lets: {},
-					tweenable: {},
-					state: 0,
-					render: null
-				});
-
-			opts.setInitLets && opts.setInitLets.call(opts);
-			opts.setTweenableLets && opts.setTweenableLets.call(opts);
-
-			this.mountedNodes = [];
-
-			this.opts = opts;
-
-			this.lets = opts.lets;
-			this.lets2 = opts.lets2;
-			return this;
-		};
-		Tez.getDecPow = function (d) {
-			return Math.pow(10, d || 4);
-		};
-		Tez.tezClass.prototype = {
-			plugin: function (plug) {
-				if (typeof plug === "string" && Tez.PluginManager[plug] !== undefined && Tez.PluginManager[plug].tez !== undefined) {
-					Tez.PluginManager[plug].tez.call(this, this.lets, this.opts);
-				}
-				return this;
-			},
-			apply: function () {
-				var _self = this,
-				opts = _self.opts,
-				lets = opts.lets,
-				lets2 = opts.lets2,
-				_lets = opts._lets;
-				var _minVal = 0.001,
-				_maxVal = 1
-					this.mountedNodes.map(function (node, index) {
-						var dom = new Tez.DOMManager(node);
-						var now = Date.now(),
-						render = opts.render,
-						tweenable = opts.tweenable,
-						round = tweenable.roundLets,
-						limitDec = tweenable.limitLetsDecimals,
-						start = tweenable && (typeof(tweenable.startTime) === "function" ? tweenable.startTime.call(_self, node, index) : tweenable.startTime) || 0,
-						dur = tweenable && (typeof(tweenable.duration) === "function" ? tweenable.duration.call(_self, node, index) : tweenable.duration) || 1000,
-						tween = Tez.TweenManager(lets, lets2),
-						diff;
-
-						if (tweenable) {
-							diff = Tez.DiffManager(lets, lets2);
-							dom.composite(function (e) {
-								if (!diff)
-									return e.state;
-								var elapsed = Math.max(0, Math.min(((Date.now() - now) - start) / dur, 1));
-								var timeElapsed = elapsed;
-								if (tweenable.curve) {
-									elapsed = tweenable.curve(timeElapsed);
-								}
-								_lets = tween(elapsed);
-								for (var p in _lets) {
-									if (round && round[p]) {
-										_lets[p] = typeof(_lets[p]) === "number" ? (_lets[p] | 0) : _lets[p] !== undefined && _lets[p].push && _lets[p].slice ? _lets[p].map(Math.round) : _lets[p];
-									} else if (limitDec && limitDec[p]) {
-										var dv = Tez.getDecPow(limitDec[p]);
-										_lets[p] = typeof(_lets[p]) === "number" ? (((_lets[p] * dv) | 0) / dv) : _lets[p] !== undefined && _lets[p].push && _lets[p].slice ? _lets[p].map(function (v) {
-												return ((v * dv) | 0) / dv;
-											}) : _lets[p];
-									}
-								}
-								if (timeElapsed > _minVal) {
-									render.call(_self, node, _lets, opts, index, elapsed);
-								}
-								return timeElapsed < _maxVal ? e.state : 0;
-							})
-							.compositeArg({
-								state: opts.state || "RUNNING"
-							});
-						} else if (opts.initState) {
-							render.call(_self, node, lets, opts, index, elapsed);
-						}
-
-					});
-				return this;
-			},
-			render: function (_lets, leaveLet) {
-				var _self = this,
-				opts = this.opts;
-				_lets = _lets || opts.lets;
-				var dm = Tez.DiffManager(opts.lets, _lets);
-				if (!dm)
-					return this;
-				this.mountedNodes.map(function (node, index) {
-					opts.render.call(_self, node, _lets || opts.lets, opts, index);
-				});
-				if (!leaveLet) {
-					opts.lets = _lets;
-				}
-				return this;
-			},
-			mountNode: function (node) {
-				node = ARRAY_SLICE.call(typeof(node) === "string" ? document.querySelectorAll(node) : node.length ? node : [node]);
-				this.mountedNodes = this.mountedNodes.concat(node);
-				return this;
-			},
-			nodeOn: function (event, on) {
-				var _self = this;
-				this.mountedNodes.map(function (node) {
-					_self.node = node;
-					node.addEventListener(event, function (e) {
-						on.call(_self, e);
-					});
-				});
-				return this;
-			},
-			nodeOff: function (event, off) {
-				var _self = this;
-				this.mountedNodes.map(function (node) {
-					_self.node = node;
-					node.removeEventListener(event, function (e) {
-						off.call(_self, e);
-					});
-				});
-				return this;
-			},
-			on: function (event, callback, unshift) {
-				if (!this.events[event]) {
-					this.events[event] = [];
-				}
-				this.events[event][unshift ? 'unshift' : 'push'](callback);
-				return this;
-			},
-			off: function (event, callback) {
-				if (!this.events[event].length) {
-					delete this.events[event];
-				}
-				var i = 0;
-				while (i < this.events[event].length) {
-					if (this.events[event][i] === callback) {
-						this.events[event].splice(i, 1);
-					} else {
-						i++
+					if (_attrs[p] !== undefined) {
+						nattr[p] = _attrs[p];
 					}
 				}
-				return this;
+				this._vars.attrs = JSON.stringify(nattr);
+				return this._quickRender ? this.render() : this;
 			},
-			dispatch: function (event, custom) {
-				if (!this.events[event]) {
-					return;
+			setStyling: function (cssText) {
+				var styling = this._vars.styling,
+				style = this._vnode.style;
+				style.cssText = styling;
+				for (var p in cssText) {
+					style[p] = cssText[p];
 				}
-				custom = custom || {};
-				var _self = this,
-				opts = _self.opts;
-				this.events[event].map(function (event) {
-					event.call(_self, Tez.extend(custom, {
-							opts: opts,
-							timestamp: Date.now(),
-							type: event,
-							target: _self
-						}));
-				});
-				return this;
+				this._vars.styling = style.cssText;
+				return this._quickRender ? this.render() : this;
+			},
+			setInnerHTML: function (contents) {
+				var content = this._vars.content;
+				if (!contents) {
+					return this._quickRender ? this.render() : this;
+				}
+				contents = typeof(contents) === "string" ? contents : contents.nodeType ? contents.outerHTML : contents;
+				var rel = contents.indexOf("=") !== -1 ? contents.charAt(0) === "+" ? 1 : -1 : 0;
+
+				if (rel === 0) {
+					content = contents;
+				} else if (rel === 1) {
+					content += contents.substr(2);
+				} else if (rel === -1) {
+					var _getParsed = _parseString(contents.substr(2))[0];
+					var _find = _getItem(_getParsed, this._node);
+					if (_find && _find.matched) {
+						this._appendStore.push({
+							virtual: _find.matched,
+							real: 'append',
+							remove: true
+						});
+					}
+				}
+
+				this._vars.content = content;
+				return this._quickRender ? this.render() : this;
 			}
 		};
 		return Tez;
-	}));
-
-(function (factory) {
-	if (typeof define === "function") {
-		define(['Tez', 'SuperAnimation'], function (tez, sa) {
-			return factory(tez, sa);
-		});
-	} else if (typeof module !== "undefined") {
-		var tez = require('./Tez');
-		var sa = require('./SuperAnimation');
-		module.exports = factory(tez, sa);
-	} else if (this.Tez !== undefined && this.SuperAnimation !== undefined) {
-		factory(this.Tez, this.SuperAnimation);
-	}
-}
-	(function (tez, sajs, undefined) {
-		sajs.CustomProperties("tez", function (elem, start, end, prop, obj) {
-			var _val = end[prop] || start[prop];
-			var _domClass = new Tez.domClass(elem);
-			var _tezClass = new Tez.tezClass({
-					render: _val.render
-				})
-				.mountNode(_domClass);
-			return function () {
-				_tezClass.render(obj, true);
-			}
-		});
-	}));
-
-(function (factory) {
-	if (typeof define === "function") {
-		define(['Tez'], function (tez) {
-			return factory.call(this, tez);
-		});
-	} else if (typeof module !== "undefined") {
-		var tez = require('./Tez');
-		module.exports = factory.call(typeof(exports) !== "undefined" ? exports : this, tez);
-	} else if (this.Tez !== undefined) {
-		this.TD = factory.call(this, this.Tez);
-	}
-}
-	(function (Tez, undefined) {
-		var _arr = Array.prototype,
-		_slice = _arr.slice;
-		var _each = function (t, fn, scope) {
-			if (typeof(t) === "object") {
-				var i;
-				if (t.length) {
-					i = 0;
-					while (i < t.length) {
-						fn.call(scope || t[i], t[i], i);
-						i++;
-					}
-				} else {
-					for (i in t) {
-						fn.call(scope || t[i], t[i], i);
-					}
-				}
-			}
-		};
-		var TD = function TD(query, context) {
-			context = context || document;
-			if (!(this instanceof TD)) {
-				return new TD(query, context);
-			}
-			if (query instanceof TD) {
-				query = query.get();
-			}
-			var query = this.query = _slice.call((typeof(query) === "string") ? (query.indexOf("<") === -1 ? context.querySelectorAll(query) : (function () {
-							var _div = document.createElement("div");
-							_div.innerHTML = query;
-							return _div.children;
-						}
-							())) : query.length && query.push ? query : [query]);
-
-			if (query.length === 0) {
-				return this;
-			}
-			this.domc = [];
-			_each(query, function (item, i) {
-				this[i] = item;
-				this.domc[i] = new Tez.domClass(item);
-			}, this);
-			this.length = query.length;
-			return this;
-		};
-		TD.prototype = {
-			get: function () {
-				return this.query;
-			},
-			find: function (_item) {
-				var _p = [];
-				this.each(function (item, i) {
-					if (item && item.isEqualNode(document.querySelector(_item))) {
-						_p = _p.concat([item]);
-					} else if (item.querySelectorAll(_item)) {
-						_p = _p.concat(_slice.call(item.querySelectorAll(_item)));
-					}
-				});
-				_each(this.query, function (item, i) {
-					delete this[i];
-					delete this.domc[i];
-					delete this.query[i];
-				}, this);
-				_each(_p, function (item, i) {
-					this[i] = item;
-					this.domc[i] = new Tez.domClass(item);
-				}, this);
-				this.length = _p.length;
-				return this;
-			},
-			parent: function (parent) {
-				return this.each(function (item, i) {
-					if (parent && item.parentNode) {
-						while (item.parentNode !== parent) {
-							item = item.parentNode;
-						}
-						this[i] = item;
-					} else {
-						this[i] = item.parentNode || item;
-					}
-				});
-			},
-			each: function (fn) {
-				var _ok = this.length;
-				if (!_ok)
-					return this;
-				_each(this, fn, this);
-				return this.virtualsync();
-			},
-			domEach: function (fn) {
-				var _ok = this.domc.length;
-				if (!_ok)
-					return this;
-				_each(this.domc, fn, this);
-				return this;
-			},
-			virtualsync: function () {
-				return this.domEach(function (item) {
-					item && item.sync();
-				});
-			},
-			attr: function (name, value) {
-				if (typeof(name) === "string") {
-					if (typeof(value) === "string") {
-						return this.domEach(function setAttrs(item) {
-							item.setAttrs(Object.defineProperty({}, name, {
-									value: value
-								}));
-						});
-					} else {
-						return this[0].getAttribute(name);
-					}
-				} else if (typeof(name) === "object") {
-					return this.domEach(function setAttrs(item) {
-						item.setAttrs(name);
-					});
-				}
-				return this;
-			},
-			css: function (name, value) {
-				if (typeof(name) === "string") {
-					if (typeof(value) === "string") {
-						return this.domEach(function setStyling(item) {
-							item.setStyling(Object.defineProperty({}, name, {
-									value: value
-								}));
-						});
-					} else {
-						return this[0].getAttribute(name);
-					}
-				} else if (typeof(name) === "object") {
-					return this.domEach(function setStyling(item) {
-						item.setStyling(name);
-					});
-				}
-				return this;
-			},
-			on: function (ev, fn) {
-				return this.each(function (item) {
-					item.addEventListener(ev, fn);
-				});
-			},
-			off: function (ev, fn) {
-				return this.each(function (item) {
-					item.removeEventListener(ev, fn);
-				});
-			},
-			laggy: function (fn, ms) {
-				var _self = this;
-				if (!fn) return this;
-				setTimeout(function () {
-					fn.call(_self);
-				}, ms || 50);
-				return this;
-			},
-			_prevDur: 0,
-			animate: function (props, options = {}) {
-				var {
-					duration = 1000,
-					ease = 'ease-in-out',
-					queue = true,
-					complete
-				} = options;
-				var _laggySec = this._prevDur;
-				this._prevDur += queue ? duration : 0;
-				return this.laggy(function () {
-					this.virtualsync()
-					.css({
-						transitionDuration: duration + 'ms',
-						transitionTimingFunction: ease
-					})
-					.laggy(function () {
-						this.css(props);
-					})
-					.laggy(complete, duration);
-				}, _laggySec);
-			},
-			html: function (value) {
-				if (value !== undefined) {
-					return this.domEach(function (item, i) {
-						item && item.setContent(value);
-					});
-				} else {
-					return this[0].innerHTML;
-				}
-			},
-			text: function (value) {
-				if (value !== undefined) {
-					return this.domEach(function (item, i) {
-						item && item.setContent(value);
-					});
-				} else {
-					return this[0].textContent || this[0].innerText;
-				}
-			},
-			append: function (html) {
-				return this.virtualsync().domEach(function (item) {
-					item && item.setCustom(function (node) {
-						if (typeof(html) === "string") {
-							node.innerHTML += html;
-						} else if (html && html.nodeType) {
-							node.appendChild(html);
-						}
-					});
-				})
-
-			},
-			appendTo: function (html) {
-				var $html = $(html);
-				return this.each(function (item) {
-					$html.append(item);
-				});
-			},
-			prependTo: function (html) {
-				var $html = $(html);
-				return this.each(function (item) {
-					$html.prepend(item);
-				});
-			},
-			prepend: function (html) {
-				return this.virtualsync().domEach(function (item) {
-					item.setCustom(function (node) {
-						if (typeof(html) === "string") {
-							node.innerHTML = html + node.innerHTML;
-						} else if (html && html.nodeType) {
-							throw new Error("Prepend for some reason doesn't support now yet");
-						}
-					});
-				})
-
-			},
-			remove: function () {
-				return this.each(function (item, i) {
-					item.parentNode.removeChild(item);
-				})
-				.virtualsync();
-			}
-		};
-		return TD;
 	}));
