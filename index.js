@@ -1,7 +1,7 @@
 /*!
  * @name Tez.js
  * @description Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and Class Manager
- * @version v2.1.4.0
+ * @version v2.2.0.0
  * @author @dalisoft (https://github.com/dalisoft)
  * @license Apache 2.0
  */
@@ -607,6 +607,18 @@
 				}
 				return this;
 			},
+			setEvent: function (find, eventName, eventFunc) {
+				var __self__ = this,
+				__eventFunc__ = function (e) {
+					eventFunc.call(__self__, this, e)
+				};
+				if (eventFunc && find === null) {
+					this._node.addEventListener(eventName, __eventFunc__);
+				} else if (eventFunc) {
+					find = this._node.querySelector(find);
+					find.addEventListener(eventName, __eventFunc__);
+				}
+			},
 			createFunction: function (fn) {
 				fn.call(this);
 			},
@@ -620,13 +632,15 @@
 				if (_attrs !== _vattrs) {
 					_diff = JSON.parse(_vattrs);
 					for (var p in _diff) {
-						this._node.setAttribute(p, _vattrs[p] || _attrs[p]);
+						this._node.setAttribute(p, _diff[p]);
 					}
+					vars.attrs = attrs(this._vnode);
 				}
 				_vattrs = vars.styling;
 				_attrs = this._node.style.cssText;
 				if (_vattrs !== _attrs) {
 					this._node.style.cssText = _vattrs;
+					vars.styling = this._vnode.style.cssText;
 				}
 				_vattrs = vars.content;
 				_attrs = this._node.innerHTML;
@@ -645,6 +659,7 @@
 					var _childs = _parseString(_vattrs),
 					_childs2 = _parseString(_attrs);
 					replaceChildrenByDiff(_it1, _it2, _childs, _childs2, append);
+					vars.content = this._vnode.innerHTML;
 				}
 				return this;
 			},
@@ -679,13 +694,13 @@
 				this._vars.styling = style.cssText;
 				return this._quickRender ? this.render() : this;
 			},
-			setInnerHTML: function (contents) {
+			setContent: function (contents) {
 				var content = this._vars.content;
 				if (!contents) {
 					return this._quickRender ? this.render() : this;
 				}
 				contents = typeof(contents) === "string" ? contents : contents.nodeType ? contents.outerHTML : contents;
-				var rel = contents.indexOf("=") !== -1 ? contents.charAt(0) === "+" ? 1 : -1 : 0;
+				var rel = contents.indexOf("=") !== -1 ? contents.charAt(0) === "+" ? 1 : contents.charAt(0) === "-" ? -1 : 0 : 0;
 
 				if (rel === 0) {
 					content = contents;
