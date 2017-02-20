@@ -1,7 +1,7 @@
 /*!
  * @name Tez.js
  * @description Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and Class Manager
- * @version v2.2.0.0
+ * @version v2.2.1.0
  * @author @dalisoft (https://github.com/dalisoft)
  * @license Apache 2.0
  */
@@ -468,6 +468,8 @@
 		}
 		var replaceChildrenByDiff = function _rchd(_attrs, _vattrs, _childs, _childs2, substore) {
 			var _store = (substore || []).concat([]);
+			var _attrs1 = attrs(_attrs),
+			_attrs2 = attrs(_vattrs);
 			if (substore) {
 				substore.splice(0, substore.length);
 			}
@@ -494,7 +496,7 @@
 							virtual: 'append',
 							real: _childs2[i]
 						});
-					} else if (_childs[i] && _childs[i].tagName !== _childs2[i].tagName) {
+					} else if (_childs[i] && _childs[i].isEqualNode(_childs2[i])) {
 						_store.push({
 							index: i,
 							diff: true,
@@ -537,6 +539,11 @@
 				_attrs.style.cssText = _vattrs.style.cssText;
 			} else if (_attrs.tagName !== _vattrs.tagName) {
 				_attrs.parentNode.replaceChild(_vattrs, _attrs);
+			} else if (_attrs1 !== _attrs2) {
+				var _diff = JSON.parse(_attrs);
+				for (var p in _diff) {
+					_attrs.setAttribute(p, _diff[p]);
+				}
 			}
 		};
 		var _tmpDiv = document.createElement("div");
@@ -621,6 +628,7 @@
 			},
 			createFunction: function (fn) {
 				fn.call(this);
+				return this;
 			},
 			render: function () {
 				var vars = this._vars;
