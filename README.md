@@ -16,6 +16,9 @@ Dear users, this is not framework, just library that renders diffed (patched) el
 
 # What it does
 * Avoids duplicated rendering
+* Minimizes reflow as possible and keeps as low as can
+* Minimize relayout
+* Optimizes page responsiveness
 * Avoids fully-rerendering of page by changing just changed nodes
 * Inline Worker function calls
 * Inline rAF function calls
