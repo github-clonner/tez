@@ -1,0 +1,3 @@
+let PluginManager = {};
+
+export { PluginManager };
