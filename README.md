@@ -4,6 +4,25 @@ Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and 
 # Note
 Dear users, this is not framework, just library that renders diffed (patched) element. This script inspired by amazing "React" and this script has own diff manager, not uses "VDOM" script.
 
+# Installation
+```sh
+// Install
+npm install tez.js
+
+// Build again
+npm run source // or npm run build
+
+// Test
+npm run test // Coming soon
+```
+
+or
+
+```html
+<script src="https://unpkg.com/tez.js@2.3.23/Tez.min.js"></script>
+```
+
+
 # For what
 * Fast Mobile apps
 * Fast Desktop apps
