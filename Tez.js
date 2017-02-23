@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 22);
+/******/ 	return __webpack_require__(__webpack_require__.s = 24);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -350,15 +350,15 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _configs = __webpack_require__(0);
 
-var _setWorker = __webpack_require__(20);
+var _setWorker = __webpack_require__(22);
 
 var _setWorker2 = _interopRequireDefault(_setWorker);
 
-var _setRaf = __webpack_require__(19);
+var _setRaf = __webpack_require__(21);
 
 var _setRaf2 = _interopRequireDefault(_setRaf);
 
-var _setFn = __webpack_require__(18);
+var _setFn = __webpack_require__(20);
 
 var _setFn2 = _interopRequireDefault(_setFn);
 
@@ -510,9 +510,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _attrs2 = __webpack_require__(3);
 
-var _str2node = __webpack_require__(21);
+var _str2node = __webpack_require__(23);
 
-var _patchDiff = __webpack_require__(17);
+var _patchDiff = __webpack_require__(19);
 
 var _makeNode2 = __webpack_require__(2);
 
@@ -792,7 +792,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _getDecPow = __webpack_require__(16);
+var _getDecPow = __webpack_require__(18);
 
 var _configs = __webpack_require__(0);
 
@@ -1162,6 +1162,63 @@ exports.default = XHR;
 "use strict";
 
 
+// https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Array/from
+// Optimized by @dalisoft (https://github.com/dalisoft) for Performance and Cleaning reason
+
+if (!Array.from) {
+	var toStr = Object.prototype.toString;
+	var maxSafeInteger = Math.pow(2, 53) - 1;
+	var toLength = function toLength(value) {
+		var len = parseInt(value);
+		return Math.min(Math.max(len, 0), maxSafeInteger);
+	};
+	Array.from = function from(arrayLike) {
+		var C = this;
+		var items = Object(arrayLike, mapFn, T);
+		if (arrayLike == null) {
+			throw new TypeError('Array.from requires an array-like object - not null or undefined');
+		}
+		if (typeof mapFn !== 'function') {
+			throw new TypeError('Array.from: when provided, the second argument must be a function');
+		}
+		var len = toLength(items.length);
+		var A = typeof C === "function" ? Object(new C(len)) : new Array(len);
+		var k = 0;
+		var kValue;
+		while (k < len) {
+			kValue = items[k];
+			if (mapFn) {
+				A[k] = typeof T === 'undefined' ? mapFn(kValue, k) : mapFn.call(T, kValue, k);
+			} else {
+				A[k] = kValue;
+			}
+			k += 1;
+		}
+		A.length = len;
+		return A;
+	};
+}
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+if (String.prototype.includes === undefined) {
+	String.prototype.includes = function (find) {
+		return this.indexOf(find) > -1;
+	};
+}
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -1172,7 +1229,7 @@ function getDecPow() {
 };
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1277,7 +1334,7 @@ function replaceChildrenByDiff(_attrs, _vattrs, _childs, _childs2, substore) {
 };
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1350,7 +1407,7 @@ var setFn = function () {
 exports.default = setFn;
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1501,7 +1558,7 @@ var setRAF = function () {
 exports.default = setRAF;
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1563,7 +1620,7 @@ if (_configs.WORKER_SUPPORT) {
 exports.default = setWorker;
 
 /***/ }),
-/* 21 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1586,7 +1643,7 @@ function _parseString(str) {
 };
 
 /***/ }),
-/* 22 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1596,6 +1653,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.tezClass = exports.URLComponent = exports.hashURL = exports.XHR = exports.domClass = exports.DOMManager = exports.TweenManager = exports.CallManager = exports.LogicManager = exports.CompositeManager = exports.DiffManager = exports.FunctionManager = exports.PluginManager = exports.createElement = undefined;
+
+__webpack_require__(17);
+
+__webpack_require__(16);
 
 var _PluginManager = __webpack_require__(1);
 
