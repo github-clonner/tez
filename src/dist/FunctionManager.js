@@ -1,4 +1,4 @@
-import { ARRAY_SLICE } from './configs';
+import { ARRAY_SLICE, WORKER_SUPPORT } from './configs';
 import setWorker from './setWorker';
 import setRAF from './setRaf';
 import setFn from './setFn';

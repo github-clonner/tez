@@ -1,6 +1,6 @@
 import { attrs } from './attrs';
 import { _parseString } from './str2node';
-import { replaceChildrenByDiff } from './pathDiff';
+import { replaceChildrenByDiff } from './patchDiff';
 import { _makeNode } from './makeNode';
 import { _getItem } from './getItem';
 
@@ -80,15 +80,15 @@ class domClass {
 			_vars.attrs = attrs( _vnode );
 		}
 		_vattrs = _vars.styling;
-		_attrs = node.style.cssText;
+		_attrs = _node.style.cssText;
 		if ( _vattrs !== _attrs ) {
 			this._node.style.cssText = _vattrs;
 			_vars.styling = _node.style.cssText;
 		}
 		_vattrs = _vars.content;
-		_attrs = node.innerHTML;
-		for ( let i = 0, len = _listOfNodes.length; i < len; i++ ) {
-			const idx = _appendStore.length;
+		_attrs = _node.innerHTML;
+		for ( let i = 0, idx, len = _listOfNodes.length; i < len; i++ ) {
+			idx = _appendStore.length;
 			_appendStore[ idx ] = {
 				virtual: _listOfNodes[ i ]
 				, real: 'append'
@@ -97,10 +97,9 @@ class domClass {
 			}
 		}
 		if ( _appendStore.length || _attrs !== _vattrs ) {
-			const _childs = _parseString( _vattrs );
-			const _childs2 = _parseString( _attrs );
-			replaceChildrenByDiff( _node, _vnode, _childs, _childs2, _appendStore );
-			_vars.content = vnode.innerHTML;
+			_vnode.innerHTML = _vattrs;
+			replaceChildrenByDiff( _node, _vnode, _vnode.children, _node.children, _appendStore );
+			_vars.content = _vnode.innerHTML;
 		}
 		return this;
 	}

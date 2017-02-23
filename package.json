@@ -1,6 +1,6 @@
 {
 	"name": "tez.js",
-	"version": "2.3.26",
+	"version": "2.3.27",
 	"description": "Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and Class Manager",
 	"main": "Tez.js",
 	"keywords": ["rendering engine", "react-like", "optimization", "dom", "super-fast", "manager", "worker", "raf", "fnc", "clean", "es2016", "jsx", "tez", "tez.js"],
