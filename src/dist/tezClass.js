@@ -2,9 +2,10 @@ import { getDecPow } from './getDecPow';
 import { ARRAY_SLICE } from './configs';
 import { extend } from './extend';
 
-let tezClass = function( opts ) {
+class tezClass {
+	constructor ( opts = {} ) {
 	this.events = {};
-	opts = extend( opts || {}, {
+	opts = extend( opts, {
 		lets: {}
 		, lets2: {}
 		, _lets: {}
@@ -23,24 +24,22 @@ let tezClass = function( opts ) {
 	this.lets = opts.lets;
 	this.lets2 = opts.lets2;
 	return this;
-};
-
-tezClass.prototype = {
+	}
 	plugin( plug ) {
 		if ( typeof plug === "string" && Tez.PluginManager[ plug ] !== undefined && Tez.PluginManager[ plug ].tez !== undefined ) {
 			Tez.PluginManager[ plug ].tez.call( this, this.lets, this.opts );
 		}
 		return this;
 	}
-	, apply() {
+	apply() {
 		const {
 			opts
 		} = this;
-		const {
+		let {
 			lets
 			, lets2
+			, _lets
 		} = opts;
-		let _lets = opts._lets;
 		const _minVal = 0.001;
 		const _maxVal = 1;
 		this.mountedNodes.map( ( node, index ) => {
@@ -90,8 +89,8 @@ tezClass.prototype = {
 		} );
 		return this;
 	}
-	, render( _lets, leaveLet ) {
-		const opts = this.opts;
+	render( _lets, leaveLet ) {
+		const { opts } = this;
 		_lets = _lets || opts.lets;
 		const dm = Tez.DiffManager( opts.lets, _lets );
 		if ( !dm )
@@ -104,12 +103,12 @@ tezClass.prototype = {
 		}
 		return this;
 	}
-	, mountNode( node ) {
+	mountNode( node ) {
 		node = ARRAY_SLICE.call( typeof( node ) === "string" ? document.querySelectorAll( node ) : node.length ? node : [ node ] );
 		this.mountedNodes = this.mountedNodes.concat( node );
 		return this;
 	}
-	, nodeOn( event, on ) {
+	nodeOn( event, on ) {
 		this.mountedNodes.map( node => {
 			this.node = node;
 			node.addEventListener( event, e => {
@@ -118,7 +117,7 @@ tezClass.prototype = {
 		} );
 		return this;
 	}
-	, nodeOff( event, off ) {
+	nodeOff( event, off ) {
 		this.mountedNodes.map( node => {
 			this.node = node;
 			node.removeEventListener( event, e => {
@@ -127,14 +126,14 @@ tezClass.prototype = {
 		} );
 		return this;
 	}
-	, on( event, callback, unshift ) {
+	on( event, callback, unshift ) {
 		if ( !this.events[ event ] ) {
 			this.events[ event ] = [];
 		}
 		this.events[ event ][ unshift ? 'unshift' : 'push' ]( callback );
 		return this;
 	}
-	, off( event, callback ) {
+	off( event, callback ) {
 		if ( !this.events[ event ].length ) {
 			delete this.events[ event ];
 		}
@@ -148,7 +147,7 @@ tezClass.prototype = {
 		}
 		return this;
 	}
-	, dispatch( event, custom = {} ) {
+	dispatch( event, custom = {} ) {
 		if ( !this.events[ event ] ) {
 			return;
 		}

@@ -1,18 +1,18 @@
 import { ARRAY_SLICE } from './configs';
 
-const setFn = function() {
+class setFn {
+	constructor () {
 	this._fn = null;
 	return this;
-};
-var p = setFn.prototype = {
+	}
 	call( fn ) {
 		this._fn = fn;
 		return this;
 	}
-	, get() {
+	get() {
 		return this._val;
 	}
-	, done( fn ) {
+	done( fn ) {
 		const _oldFn = this._fn;
 		const curr = this;
 		this._fn = function() {
@@ -23,12 +23,12 @@ var p = setFn.prototype = {
 		};
 		return this;
 	}
-	, run( a ) {
+	run( a ) {
 		const args = a !== undefined ? ARRAY_SLICE.call( arguments ) : [];
 		this._val = args.length ? this._fn( ...args ) : this._fn.call( this );
 		return this;
 	}
-	, close() {
+	close() {
 		this._fn = null;
 		return this;
 	}

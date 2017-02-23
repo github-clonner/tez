@@ -1,4 +1,5 @@
-let URLComponent = function( opts = {} ) {
+class URLComponent {
+	constructor ( opts = {} ) {
 	this.hash = new Tez.hashURL( {
 		prefix: opts.prefixURL
 	} );
@@ -6,8 +7,7 @@ let URLComponent = function( opts = {} ) {
 	this.xhr = new Tez.XHR();
 	this.loadRealLink = opts.loadRealLink !== undefined ? opts.loadRealLink : true;
 	return this;
-};
-URLComponent.prototype = {
+	}
 	request( url, method, withCredentials ) {
 		this.hash.set( url );
 		if ( this.loadRealLink ) {
@@ -17,7 +17,7 @@ URLComponent.prototype = {
 		}
 		return this;
 	}
-	, then( fn ) {
+	then( fn ) {
 		if ( this.loadRealLink && this.hash.getChanged() ) {
 			const __self__ = this.xhr;
 			const __self__hash__ = this.hash;

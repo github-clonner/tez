@@ -78,32 +78,32 @@ const RAF_UPDATE = ( ( win => {
 	} )
 	( ROOT ) );
 
-const setRAF = function() {
+class setRAF {
+	constructor () {
 	this._raf = null;
 	return this;
-};
-var p = setRAF.prototype = {
+	}
 	call( fn ) {
 		this._raf = RAF_UPDATE.add( fn );
 		this._raf.self = this;
 		this._val = this._raf._val;
 		return this;
 	}
-	, get() {
+	get() {
 		return this._raf.get();
 	}
-	, done( fn ) {
+	done( fn ) {
 		this._raf.message( fn );
 		this._val = this._raf._val;
 		return this;
 	}
-	, run() {
+	run() {
 		this._raf.args = ARRAY_SLICE.call( arguments );
 		this._raf.run = true;
 		this._val = this._raf._val;
 		return this;
 	}
-	, close() {
+	close() {
 		RAF_UPDATE.destroy( this._raf );
 		return this;
 	}

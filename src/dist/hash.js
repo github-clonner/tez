@@ -1,20 +1,20 @@
-let hashURL = function( opts = {} ) {
+class hashURL {
+ constructor( opts = {} ) {
 	this._prefix = opts.prefix || "!/#";
 	this._hashTags = true;
 	this._changed = false;
 	return this;
-};
-hashURL.prototype = {
+	}
 	getHash( hash ) {
 		return this._prefix + hash;
 	}
-	, getLocationHash() {
+	getLocationHash() {
 		return window.location.hash.substr( 1 );
 	}
-	, getChanged() {
+	getChanged() {
 		return this._changed;
 	}
-	, setHash( hash ) {
+	setHash( hash ) {
 		if ( this.getHash( hash ) !== this.getLocationHash() ) {
 			window.location.hash = this.getHash( hash );
 			this._changed = true;
@@ -23,7 +23,7 @@ hashURL.prototype = {
 		}
 		return this;
 	}
-	, set( url ) {
+	set( url ) {
 		return this.setHash( url );
 	}
 };

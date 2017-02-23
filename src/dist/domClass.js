@@ -4,7 +4,8 @@ import { replaceChildrenByDiff } from './pathDiff';
 import { _makeNode } from './makeNode';
 import { _getItem } from './getItem';
 
-let domClass = function( node, vars ) {
+class domClass {
+	constructor (node, vars) {
 	this._vars = vars = vars || {};
 	if ( vars.quickRender === undefined ) {
 		vars.quickRender = true;
@@ -27,8 +28,7 @@ let domClass = function( node, vars ) {
 		vars.content = this._vnode.innerHTML;
 	}
 	return this.render();
-};
-domClass.prototype = {
+	}
 	createElement( opts ) {
 		let item;
 		const appendStore = this._appendStore;
@@ -41,77 +41,74 @@ domClass.prototype = {
 		};
 		return item;
 	}
-	, setProps( props ) {
+	setProps( props ) {
 		for ( const p in props ) {
 			this.props[ p ] = props[ p ];
 		}
 		return this;
 	}
-	, setEvent( find, eventName, eventFunc ) {
+	setEvent( find, eventName, eventFunc ) {
 		const __self__ = this;
+		const { _node } = this;
 
 		const __eventFunc__ = function( e ) {
 			eventFunc.call( __self__, this, e )
-		};
+		}
 
 		if ( eventFunc && find === null ) {
-			this._node.addEventListener( eventName, __eventFunc__ );
+			_node.addEventListener( eventName, __eventFunc__ );
 		} else if ( eventFunc ) {
-			find = this._node.querySelector( find );
+			find = _node.querySelector( find );
 			find.addEventListener( eventName, __eventFunc__ );
 		}
 		return this;
 	}
-	, createFunction( fn ) {
+	createFunction( fn ) {
 		fn.call( this );
 		return this;
 	}
-	, render() {
-		const vars = this._vars;
-		const node = this._node;
-		const vnode = this._vnode;
-		const append = this._appendStore;
-		const _listOfNodes = this._listOfNodes;
-		let _vattrs = vars.attrs;
-		let _attrs = attrs( node );
+	render() {
+		const { _vars, _node, _vnode, _appendStore, _listOfNodes } = this;
+		let _vattrs = _vars.attrs;
+		let _attrs = attrs( _node );
 		let _diff;
 		if ( _attrs !== _vattrs ) {
 			_diff = JSON.parse( _vattrs );
 			for ( const p in _diff ) {
-				node.setAttribute( p, _diff[ p ] );
+				_node.setAttribute( p, _diff[ p ] );
 			}
-			vars.attrs = attrs( vnode );
+			_vars.attrs = attrs( _vnode );
 		}
-		_vattrs = vars.styling;
+		_vattrs = _vars.styling;
 		_attrs = node.style.cssText;
 		if ( _vattrs !== _attrs ) {
 			this._node.style.cssText = _vattrs;
-			vars.styling = node.style.cssText;
+			_vars.styling = _node.style.cssText;
 		}
-		_vattrs = vars.content;
+		_vattrs = _vars.content;
 		_attrs = node.innerHTML;
 		for ( let i = 0, len = _listOfNodes.length; i < len; i++ ) {
-			const idx = append.length;
-			append[ idx ] = {
+			const idx = _appendStore.length;
+			_appendStore[ idx ] = {
 				virtual: _listOfNodes[ i ]
 				, real: 'append'
 				, diff: false
 				, index: idx
 			}
 		}
-		if ( append.length || _attrs !== _vattrs ) {
+		if ( _appendStore.length || _attrs !== _vattrs ) {
 			const _childs = _parseString( _vattrs );
 			const _childs2 = _parseString( _attrs );
-			replaceChildrenByDiff( node, vnode, _childs, _childs2, append );
-			vars.content = vnode.innerHTML;
+			replaceChildrenByDiff( _node, _vnode, _childs, _childs2, _appendStore );
+			_vars.content = vnode.innerHTML;
 		}
 		return this;
 	}
-	, setNode( node ) {
+	setNode( node ) {
 		this._listOfNodes.push( node );
 		return this._quickRender ? this.render() : this;
 	}
-	, setAttrs( _attrs ) {
+	setAttrs( _attrs ) {
 		let attr;
 		const nattr = {};
 		const _attr = JSON.parse( this._vars.attrs );
@@ -128,7 +125,7 @@ domClass.prototype = {
 		this._vars.attrs = JSON.stringify( nattr );
 		return this._quickRender ? this.render() : this;
 	}
-	, setStyling( cssText ) {
+	setStyling( cssText ) {
 		const styling = this._vars.styling;
 		const style = this._vnode.style;
 		style.cssText = styling;
@@ -138,7 +135,7 @@ domClass.prototype = {
 		this._vars.styling = style.cssText;
 		return this._quickRender ? this.render() : this;
 	}
-	, setContent( contents ) {
+	setContent( contents ) {
 		let content = this._vars.content;
 		if ( !contents ) {
 			return this._quickRender ? this.render() : this;

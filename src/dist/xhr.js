@@ -1,4 +1,5 @@
-let XHR = function( opts = {} ) {
+class XHR {
+	constructor( opts = {} ) {
 	this._xhr = new XMLHttpRequest();
 	const xhr = this;
 	if ( opts.load ) {
@@ -14,25 +15,24 @@ let XHR = function( opts = {} ) {
 		} );
 	}
 	return this;
-};
-XHR.prototype = {
+	}
 	on( ev, fn ) {
 		this._xhr.addEventListener( ev, fn );
 		return this;
 	}
-	, withCredentials( state ) {
+	withCredentials( state ) {
 		this._xhr.withCredentials = state !== undefined ? state : false;
 		return this;
 	}
-	, off( ev, fn ) {
+	off( ev, fn ) {
 		this._xhr.removeEventListener( ev, fn );
 		return this;
 	}
-	, request( method, url, async ) {
+	request( method, url, async ) {
 		this._xhr.open( method, url, async );
 		return this;
 	}
-	, send( params ) {
+	send( params ) {
 		if ( params ) {
 			this._xhr.send( params );
 		} else {

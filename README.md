@@ -19,7 +19,7 @@ npm run test // Coming soon
 or
 
 ```html
-<script src="https://unpkg.com/tez.js/Tez.min.js"></script>
+<script src="https://unpkg.com/tez.js@2.3.23/Tez.min.js"></script>
 ```
 
 

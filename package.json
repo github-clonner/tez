@@ -1,9 +1,9 @@
 {
 	"name": "tez.js",
-	"version": "2.3.25",
+	"version": "2.3.26",
 	"description": "Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and Class Manager",
 	"main": "Tez.js",
-	"keywords": ["rendering engine", "react-like", "optimization", "dom", "super-fast", "manager", "worker", "raf", "fnc", "clean"],
+	"keywords": ["rendering engine", "react-like", "optimization", "dom", "super-fast", "manager", "worker", "raf", "fnc", "clean", "es2016", "jsx", "tez", "tez.js"],
 	"devDependencies": {
 		"babel": "6.5.2",
 		"babel-core": "6.22.1",
