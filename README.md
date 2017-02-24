@@ -4,8 +4,8 @@ Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and 
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
 [![Travis](https://img.shields.io/travis/dalisoft/tez.svg)](http://github.com/dalisoft/tez)
-[![GitHub issues](https://img.shields.io/github/issues/dalisoft/tez.svg)](http://github.com/dalisoft/tez)
-[![license](https://img.shields.io/github/license/dalisoft/tez.svg)](http://github.com/dalisoft/tez)
+[![GitHub issues](https://img.shields.io/github/issues/dalisoft/tez.svg)](http://github.com/dalisoft/tez/issues)
+[![license](https://img.shields.io/github/license/dalisoft/tez.svg)](https://github.com/dalisoft/tez/blob/master/LICENSE)
 [![Flattr this][flattr-image]][flattr-url]
 
 # Note
