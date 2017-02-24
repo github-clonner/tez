@@ -108,3 +108,8 @@ new SuperAnimation.Tween('.container', {
 [downloads-url]: https://npmjs.org/package/tez.js
 [flattr-image]: https://api.flattr.com/button/flattr-badge-large.png
 [flattr-url]: https://flattr.com/thing/0bfc4bbb6273be0e5abeb8fa5e0c71a8
+
+## Support on Beerpay
+Hey dude! Help me out for a couple of :beers:!
+
+[![Beerpay](https://beerpay.io/dalisoft/tez/badge.svg?style=beer-square)](https://beerpay.io/dalisoft/tez)  [![Beerpay](https://beerpay.io/dalisoft/tez/make-wish.svg?style=flat-square)](https://beerpay.io/dalisoft/tez?focus=wish)
