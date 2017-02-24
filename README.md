@@ -101,5 +101,7 @@ new SuperAnimation.Tween('.container', {
 
 [npm-image]: https://img.shields.io/npm/v/tez.js.svg
 [npm-url]: https://npmjs.org/package/tez.js
+[downloads-image]: https://img.shields.io/npm/dm/tez.js.svg
+[downloads-url]: https://npmjs.org/package/tez.js
 [flattr-image]: https://api.flattr.com/button/flattr-badge-large.png
 [flattr-url]: https://flattr.com/apps/5050
