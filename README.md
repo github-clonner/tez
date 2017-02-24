@@ -3,6 +3,9 @@ Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and 
 
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
+[![Travis](https://img.shields.io/travis/rust-lang/rust.svg)](http://github.com/dalisoft/tez)
+[![GitHub issues](https://img.shields.io/github/issues/badges/shields.svg)](http://github.com/dalisoft/tez)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)]([![GitHub issues](https://img.shields.io/github/issues/badges/shields.svg)](http://github.com/dalisoft/tez))
 [![Flattr this][flattr-image]][flattr-url]
 
 # Note
@@ -104,4 +107,4 @@ new SuperAnimation.Tween('.container', {
 [downloads-image]: https://img.shields.io/npm/dm/tez.js.svg
 [downloads-url]: https://npmjs.org/package/tez.js
 [flattr-image]: https://api.flattr.com/button/flattr-badge-large.png
-[flattr-url]: https://flattr.com/apps/5050
+[flattr-url]: https://flattr.com/thing/0bfc4bbb6273be0e5abeb8fa5e0c71a8
