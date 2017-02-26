@@ -3,8 +3,6 @@ import { ARRAY_SLICE, ROOT } from './configs';
 const RAF_CALLS = [];
 
 const RAF_UPDATE = ( ( win => {
-		win.requestAnimationFrame = win.requestAnimationFrame || ( fn => win.setTimeout( fn, 50 / 3 ) );
-		win.cancelAnimationFrame = win.cancelAnimationFrame || ( fn => win.clearTimeout( fn ) );
 		const _run = "RUNNING";
 		let _tick;
 		_tick = function update() {

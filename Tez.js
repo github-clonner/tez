@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 24);
+/******/ 	return __webpack_require__(__webpack_require__.s = 28);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -81,12 +81,12 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
+/* WEBPACK VAR INJECTION */(function(global) {
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var ROOT = typeof window !== "undefined" ? window :  true ? exports : {};
+var ROOT = typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : undefined;
 var MAX_WORKER_THREAD = 2;
 var CURRENT_WORKER_THREAD = 0;
 var LIST_WORKER_THREAD = [];
@@ -101,6 +101,7 @@ exports.ARRAY_SLICE = ARRAY_SLICE;
 exports.FUNC_STR = FUNC_STR;
 exports.WORKER_SUPPORT = WORKER_SUPPORT;
 exports.ROOT = ROOT;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(21)))
 
 /***/ }),
 /* 1 */
@@ -350,15 +351,15 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _configs = __webpack_require__(0);
 
-var _setWorker = __webpack_require__(22);
+var _setWorker = __webpack_require__(26);
 
 var _setWorker2 = _interopRequireDefault(_setWorker);
 
-var _setRaf = __webpack_require__(21);
+var _setRaf = __webpack_require__(25);
 
 var _setRaf2 = _interopRequireDefault(_setRaf);
 
-var _setFn = __webpack_require__(20);
+var _setFn = __webpack_require__(24);
 
 var _setFn2 = _interopRequireDefault(_setFn);
 
@@ -510,9 +511,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _attrs2 = __webpack_require__(3);
 
-var _str2node = __webpack_require__(23);
+var _str2node = __webpack_require__(27);
 
-var _patchDiff = __webpack_require__(19);
+var _patchDiff = __webpack_require__(23);
 
 var _makeNode2 = __webpack_require__(2);
 
@@ -792,7 +793,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _getDecPow = __webpack_require__(18);
+var _getDecPow = __webpack_require__(22);
 
 var _configs = __webpack_require__(0);
 
@@ -1162,6 +1163,28 @@ exports.default = XHR;
 "use strict";
 
 
+if (Array.prototype.filter === undefined) {
+	Array.prototype.filter = function (fn) {
+		var i = 0;
+		if (!fn) return false;
+		while (i < this.length) {
+			if (!fn(this[i])) {
+				this.splice(i, 1);
+			} else {
+				i++;
+			}
+		}
+		return this;
+	};
+}
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 // https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Array/from
 // Optimized by @dalisoft (https://github.com/dalisoft) for Performance and Cleaning reason
 
@@ -1200,7 +1223,84 @@ if (!Array.from) {
 }
 
 /***/ }),
-/* 17 */
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+if (Array.prototype.map === undefined) {
+	Array.prototype.map = function (fn, scope) {
+		var i = 0;
+		if (!fn) return false;
+		while (i < this.length) {
+			this[i] = fn.call(scope || this[i], this[i], i);
+			i++;
+		}
+		return this;
+	};
+}
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _configs = __webpack_require__(0);
+
+var _vendor = ['webkit', 'moz', 'ms', 'o'];
+var animFrame = 'AnimationFrame';
+var rafSuffixForVendor = 'Request' + animFrame;
+var cafSuffixForVendor = 'Cancel' + animFrame;
+var cafSuffixForVendor2 = 'CancelRequest' + animFrame;
+var _timeout = setTimeout;
+var _clearTimeout = clearTimeout;
+
+if (_configs.ROOT.requestAnimationFrame === undefined) {
+
+	var _raf = void 0,
+	    now = void 0,
+	    lastTime = Date.now(),
+	    frameMs = 50 / 3,
+	    fpsSec = frameMs;
+
+	_vendor.map(function (vendor) {
+		if ((_raf = _configs.ROOT[vendor + rafSuffixForVendor]) === undefined) {
+			_raf = function _raf(fn) {
+				return _timeout(function () {
+					now = Date.now();
+					fn(now - lastTime);
+					fpsSec = frameMs + (Date.now() - now);
+				}, fpsSec);
+			};
+		}
+	});
+
+	if (_raf !== undefined) {
+		_configs.ROOT.requestAnimationFrame = _raf;
+	}
+}
+
+if (_configs.ROOT.cancelAnimationFrame === undefined) {
+	var _caf = void 0;
+
+	_vendor.map(function (vendor) {
+		if ((_caf = _configs.ROOT[vendor + cafSuffixForVendor]) === undefined && (_caf = _configs.ROOT[vendor + cafSuffixForVendor2]) === undefined) {
+			_caf = function _caf(fn) {
+				return _clearTimeout(fn);
+			};
+		}
+	});
+
+	if (_caf !== undefined) {
+		_configs.ROOT.cancelAnimationFrame = _caf;
+	}
+}
+
+/***/ }),
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1213,7 +1313,37 @@ if (String.prototype.includes === undefined) {
 }
 
 /***/ }),
-/* 18 */
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var g;
+
+// This works in non-strict mode
+g = function () {
+	return this;
+}();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1, eval)("this");
+} catch (e) {
+	// This works if the window reference is available
+	if ((typeof window === "undefined" ? "undefined" : _typeof(window)) === "object") g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+/***/ }),
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1229,7 +1359,7 @@ function getDecPow() {
 };
 
 /***/ }),
-/* 19 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1312,7 +1442,11 @@ function replaceChildrenByDiff(_attrs, _vattrs, _childs, _childs2, substore) {
 					_attrs.appendChild(vr);
 				}
 			} else if (!item.diff && vr === 'append') {
-				rr.remove();
+				if (rr.remove !== undefined) {
+					rr.remove();
+				} else {
+					_attrs3.attrs.replaceChild(rr);
+				}
 			} else if (item.diff) {
 				replaceChildrenByDiff(rr, vr, vr.children, rr.children);
 			}
@@ -1326,7 +1460,9 @@ function replaceChildrenByDiff(_attrs, _vattrs, _childs, _childs2, substore) {
 	} else if (!_isEqualAttr && _isEqualTag8CSS && _isEqualHTML) {
 		var _diff = (0, _extend.extend)(JSON.parse(_attrs2), JSON.parse(_attrs1));
 		for (var p in _diff) {
-			if (p === "style") continue;
+			if (p === "style") {
+				continue;
+			}
 			_attrs.setAttribute(p, _diff[p]);
 		}
 	}
@@ -1334,7 +1470,7 @@ function replaceChildrenByDiff(_attrs, _vattrs, _childs, _childs2, substore) {
 };
 
 /***/ }),
-/* 20 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1407,7 +1543,7 @@ var setFn = function () {
 exports.default = setFn;
 
 /***/ }),
-/* 21 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1428,12 +1564,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var RAF_CALLS = [];
 
 var RAF_UPDATE = function (win) {
-	win.requestAnimationFrame = win.requestAnimationFrame || function (fn) {
-		return win.setTimeout(fn, 50 / 3);
-	};
-	win.cancelAnimationFrame = win.cancelAnimationFrame || function (fn) {
-		return win.clearTimeout(fn);
-	};
 	var _run = "RUNNING";
 	var _tick = void 0;
 	_tick = function update() {
@@ -1558,7 +1688,7 @@ var setRAF = function () {
 exports.default = setRAF;
 
 /***/ }),
-/* 22 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1620,7 +1750,7 @@ if (_configs.WORKER_SUPPORT) {
 exports.default = setWorker;
 
 /***/ }),
-/* 23 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1643,7 +1773,7 @@ function _parseString(str) {
 };
 
 /***/ }),
-/* 24 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1654,9 +1784,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.tezClass = exports.URLComponent = exports.hashURL = exports.XHR = exports.domClass = exports.DOMManager = exports.TweenManager = exports.CallManager = exports.LogicManager = exports.CompositeManager = exports.DiffManager = exports.FunctionManager = exports.PluginManager = exports.createElement = undefined;
 
+__webpack_require__(20);
+
 __webpack_require__(17);
 
 __webpack_require__(16);
+
+__webpack_require__(18);
+
+__webpack_require__(19);
 
 var _PluginManager = __webpack_require__(1);
 

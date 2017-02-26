@@ -69,12 +69,12 @@ _helpers.on("onupdate", function () {
 	_res.setContent(this.lets.marked());
 });
 
-function _key() {
+function _key(time) {
 	_helpers.dispatch("onupdate");
 	requestAnimationFrame(_key);
 }
 
-_key();
+_key(0);
 </script>
 </body>
 </html>

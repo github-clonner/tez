@@ -1,6 +1,15 @@
-import { attrs } from './attrs';
-import { extend } from './extend';
-import { _getItem } from './getItem';
+import {
+	attrs
+}
+from './attrs';
+import {
+	extend
+}
+from './extend';
+import {
+	_getItem
+}
+from './getItem';
 
 export function replaceChildrenByDiff(_attrs, _vattrs, _childs, _childs2, substore) {
 	const _store = substore || [];
@@ -68,7 +77,11 @@ export function replaceChildrenByDiff(_attrs, _vattrs, _childs, _childs2, substo
 					_attrs.appendChild(vr);
 				}
 			} else if (!item.diff && vr === 'append') {
-				rr.remove();
+				if (rr.remove !== undefined) {
+					rr.remove();
+				} else {
+					attrs.replaceChild(rr);
+				}
 			} else if (item.diff) {
 				replaceChildrenByDiff(rr, vr, vr.children, rr.children);
 			}
@@ -82,8 +95,9 @@ export function replaceChildrenByDiff(_attrs, _vattrs, _childs, _childs2, substo
 	} else if (!_isEqualAttr && _isEqualTag8CSS && _isEqualHTML) {
 		const _diff = extend(JSON.parse(_attrs2), JSON.parse(_attrs1));
 		for (let p in _diff) {
-			if (p === "style")
+			if (p === "style") {
 				continue;
+			}
 			_attrs.setAttribute(p, _diff[p]);
 		}
 	}

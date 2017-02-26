@@ -1,5 +1,5 @@
 # tez
-Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and Class Manager
+Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and DOM Manager
 
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
@@ -30,6 +30,8 @@ or
 <script src="https://unpkg.com/tez.js/Tez.min.js"></script>
 ```
 
+# Docs
+* Some docs can be seen at <a href="https://github.com/dalisoft/tez/tree/master/docs">HERE</a>
 
 # For what
 * Fast Mobile apps
@@ -56,6 +58,9 @@ or
 * DOM Management
 
 # Example of What it does
+
+### Example 1
+
 ```javascript
 // SuperAnimation.js is for example, but plug-in included for my private stuff
 new SuperAnimation.Tween('.container', {
@@ -74,6 +79,16 @@ new SuperAnimation.Tween('.container', {
 * \#1: Effective way changing content, redraws only changed stuffs, not entire layer or html (inner, outer) or may change html once if needed, but very fast and power effecient.
 * \#2: Default html way, innerHTML changes entire layer and redraws, this affects to performance too and this is ineffecient.
 
+### Example 2
+
+```javascript
+var dc = new Tez.domClass('body');
+
+	dc.setContent("+=<div id=\"loader\"></div>");
+
+	// Uses appendChild for you, like innerHTML syntax for effective
+```
+
 # Methods
 * `FunctionManager`
 * `CompositeManager`
@@ -87,6 +102,13 @@ new SuperAnimation.Tween('.container', {
 * `tezClass`
 
 # Compatibility
+
+### Note
+This library works nice at IE10+, Chrome 35+, Firefox 35+, Opera 15+ and works partly at starting supported browsers.
+I am recommend you render at page-load so you never see issues. Change interval check at 300-ms for better result
+
+### Supported browsers
+
 * Android 4+
 * iOS 7+
 * Internet Explorer 9+
@@ -94,9 +116,8 @@ new SuperAnimation.Tween('.container', {
 * Firefox
 * Opera 12+
 
+
 # Shims required in some cases
-* `Array.prototype.map` [INCLUDED IN JS, You can use method anywhere after adding our script]
-* `Array.prototype.filter` [INCLUDED IN JS, You can use method anywhere after adding our script]
 * `window.Worker`
 
 # License

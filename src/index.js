@@ -1,5 +1,8 @@
 import "./shim/string_includes";
 import "./shim/array_from";
+import "./shim/array_filter";
+import "./shim/array_map";
+import "./shim/raf";
 import { PluginManager } from './dist/PluginManager';
 import FunctionManager from './dist/FunctionManager';
 import DiffManager from './dist/DiffManager';
