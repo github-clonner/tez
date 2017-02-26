@@ -1,16 +1,16 @@
 {
   "name": "tez.js",
-  "version": "2.3.35",
+  "version": "2.3.38",
   "description": "Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and DOM Manager",
   "main": "Tez.js",
   "keywords": [
     "rendering engine",
-	"rendering library",
-	"virtua-dom-like",
-	"diff dom",
-	"patch dom",
-	"dom update",
-	"harmony",
+    "rendering library",
+    "virtua-dom-like",
+    "diff dom",
+    "patch dom",
+    "dom update",
+    "harmony",
     "react-like",
     "optimization",
     "dom",
@@ -46,10 +46,7 @@
     "test": "mocha --compilers js:babel-core/register --colors ./test/*.spec.js",
     "test:watch": "mocha --compilers js:babel-core/register --colors -w ./test/*.spec.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/dalisoft/tez/"
-  },
+  "repository": "https://github.com/dalisoft/tez/",
   "author": "dalisoft",
   "license": "Apache-2.0",
   "dependencies": {}
