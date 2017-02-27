@@ -1,4 +1,4 @@
-let ROOT = typeof(window) !== "undefined" ? window : typeof(exports) !== "undefined" ? exports : {};
+let ROOT = typeof(window) !== "undefined" ? window : typeof(global) !== "undefined" ? global : this;
 let MAX_WORKER_THREAD = 2;
 let CURRENT_WORKER_THREAD = 0;
 let LIST_WORKER_THREAD = [];

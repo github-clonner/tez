@@ -1,8 +1,10 @@
-import { ARRAY_SLICE } from './configs';
+import { ARRAY_SLICE, ROOT } from './configs';
 
-const _tmpDiv = document.createElement( "div" );
+const document = ROOT.document;
+
+const _tmpDiv = document !== undefined ? document.createElement( "div" ) : false;
 export function _parseString (str) {
-	if ( !str ) {
+	if ( !str || !_tmpDiv ) {
 		return [];
 	};
 	_tmpDiv.innerHTML = str;

@@ -1,5 +1,6 @@
 import "./shim/string_includes";
 import "./shim/array_from";
+import "./shim/array_isarray";
 import "./shim/array_filter";
 import "./shim/array_map";
 import "./shim/raf";
@@ -15,5 +16,6 @@ import hashURL from './dist/hash';
 import { createElement, makeNode } from './dist/makeNode';
 import URLComponent from './dist/urlc';
 import tezClass from './dist/tezClass';
+import Data from './dist/data';
 
-export { createElement, PluginManager, FunctionManager, DiffManager, CompositeManager, LogicManager, CallManager, TweenManager, DOMManager, domClass, XHR, hashURL, URLComponent, tezClass };
+export { Data, createElement, PluginManager, FunctionManager, DiffManager, CompositeManager, LogicManager, CallManager, TweenManager, DOMManager, domClass, XHR, hashURL, URLComponent, tezClass };
