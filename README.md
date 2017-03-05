@@ -1,11 +1,11 @@
 # tez
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/dalisoft/tez.svg)](https://greenkeeper.io/)
 Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and DOM Manager
 
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
 [![Travis](https://img.shields.io/travis/dalisoft/tez.svg)](http://github.com/dalisoft/tez)
+[![Greenkeeper badge](https://badges.greenkeeper.io/dalisoft/tez.svg)](https://greenkeeper.io/)
 [![GitHub issues](https://img.shields.io/github/issues/dalisoft/tez.svg)](http://github.com/dalisoft/tez/issues)
 [![Beerpay](https://img.shields.io/beerpay/dalisoft/tez.svg)](https://beerpay.io/dalisoft/tez/)
 [![license](https://img.shields.io/github/license/dalisoft/tez.svg)](https://github.com/dalisoft/tez/blob/master/LICENSE)
