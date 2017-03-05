@@ -1,4 +1,6 @@
 # tez
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/dalisoft/tez.svg)](https://greenkeeper.io/)
 Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and DOM Manager
 
 [![NPM Version][npm-image]][npm-url]
