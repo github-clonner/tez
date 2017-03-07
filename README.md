@@ -40,6 +40,11 @@ yarn add tez.js
 <script src="https://unpkg.com/tez.js/Tez.min.js"></script>
 ```
 
+or via [jsdelivr](http://www.jsdelivr.com/) (Thanks to jsdelivr)
+```html
+<script src="https://cdn.jsdelivr.net/tez.js/latest/Tez.min.js"></script>
+```
+
 # Docs
 * Some docs can be seen at <a href="https://github.com/dalisoft/tez/tree/master/docs">HERE</a>
 
