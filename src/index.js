@@ -17,5 +17,6 @@ import { createElement, makeNode } from './dist/makeNode';
 import URLComponent from './dist/urlc';
 import tezClass from './dist/tezClass';
 import Data from './dist/data';
+import Wrapper from './dist/helper';
 
 export { Data, createElement, PluginManager, FunctionManager, DiffManager, CompositeManager, LogicManager, CallManager, TweenManager, DOMManager, domClass, XHR, hashURL, URLComponent, tezClass };

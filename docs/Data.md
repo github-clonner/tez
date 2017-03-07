@@ -17,8 +17,9 @@
 ```javascript
 
 	let node = new Tez.Data({x:0,y:1,z:{p:5}});
-	let attrPack = attrs(node);
-	// attrPack = '{"id":"node"}'
+	    node.set(['z', 'p'], 4);
+        node.get('z');
+	// Map(p => 5)
 
 ```
 
