@@ -41,6 +41,22 @@ class domClass {
 		};
 		return item;
 	}
+	sync( { props, content, styling, attrs } ) {
+		if (props) {
+			this.props = props;
+		}
+		if (content) {
+			this.vars.content = content;
+		}
+		if (styling) {
+			this.vars.styling = styling;
+		}
+		if (attrs) {
+			this.vars.attrs = attrs;
+		}
+
+		return this;
+	}
 	setProps( props ) {
 		for ( const p in props ) {
 			this.props[ p ] = props[ p ];
