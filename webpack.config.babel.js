@@ -26,7 +26,7 @@ const config = {
   module: {
 	loaders: [
       {
-        test: /(\.jsx|\.js)$/,
+        test: /.js$/,
         loader: 'babel-loader',
         query: {
           presets: ['es2015']

@@ -185,6 +185,29 @@ var domClass = function () {
 			return item;
 		}
 	}, {
+		key: 'sync',
+		value: function sync(_ref) {
+			var props = _ref.props,
+			    content = _ref.content,
+			    styling = _ref.styling,
+			    attrs = _ref.attrs;
+
+			if (props) {
+				this.props = props;
+			}
+			if (content) {
+				this.vars.content = content;
+			}
+			if (styling) {
+				this.vars.styling = styling;
+			}
+			if (attrs) {
+				this.vars.attrs = attrs;
+			}
+
+			return this;
+		}
+	}, {
 		key: 'setProps',
 		value: function setProps(props) {
 			for (var p in props) {

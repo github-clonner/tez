@@ -1,4 +1,5 @@
 # tez
+[![Tez App][tez-image]][tez-url]
 
 Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and DOM Manager
 
@@ -138,6 +139,8 @@ I am recommend you render at page-load so you never see issues. Change interval 
 # License
 * Apache 2.0
 
+[tez-image]: https://raw.githubusercontent.com/dalisoft/tez/master/tez-logo.png
+[tez-url]: https://github.com/dalisoft/tez/
 [npm-image]: https://img.shields.io/npm/v/tez.js.svg
 [npm-url]: https://npmjs.org/package/tez.js
 [downloads-image]: https://img.shields.io/npm/dm/tez.js.svg
