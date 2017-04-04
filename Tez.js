@@ -128,6 +128,8 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _attrs2 = __webpack_require__(4);
@@ -143,17 +145,18 @@ var _getItem2 = __webpack_require__(6);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var domClass = function () {
-	function domClass(node, vars) {
+	function domClass(node) {
+		var vars = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
 		_classCallCheck(this, domClass);
 
-		this._vars = vars = vars || {};
+		this._vars = vars;
 		if (vars.quickRender === undefined) {
 			vars.quickRender = true;
 		}
-		var _opts = this._opt = {};
-		this._node = typeof node === "string" ? document.querySelector(node) : node.length && node[0].nodeType ? node[0] : node;
+		this._opt = {};
+		this._node = typeof node === 'string' ? document.querySelector(node) : node.length && node[0].nodeType ? node[0] : node;
 		this._vnode = this._node.cloneNode(true);
-		this._nodeElem = this._vnode;
 		this._quickRender = vars.quickRender;
 		this._appendStore = [];
 		this.props = {};
@@ -251,11 +254,18 @@ var domClass = function () {
 
 			var _vattrs = _vars.attrs;
 			var _attrs = (0, _attrs2.attrs)(_node);
-			var _diff = void 0;
+			var _diff = void 0,
+			    _diff2 = void 0;
 			if (_attrs !== _vattrs) {
 				_diff = JSON.parse(_vattrs);
+				_diff2 = JSON.parse(_attrs);
 				for (var p in _diff) {
 					_node.setAttribute(p, _diff[p]);
+				}
+				for (var _p in _diff2) {
+					if (_diff[_p] === undefined) {
+						_node.removeAttribute(_p);
+					}
 				}
 				_vars.attrs = (0, _attrs2.attrs)(_vnode);
 			}
@@ -318,6 +328,34 @@ var domClass = function () {
 				style[p] = cssText[p];
 			}
 			this._vars.styling = style.cssText;
+			return this._quickRender ? this.render() : this;
+		}
+	}, {
+		key: 'setView',
+		value: function setView(get) {
+			var finalNode = void 0;
+			if (typeof get === "string") {
+				var compileStr2Node = get.includes("</") || get.includes("/>");
+				if (compileStr2Node) {
+					finalNode = (0, _str2node._parseString)(get)[0];
+				} else {
+					finalNode = document.createElement(get);
+				}
+			} else if (typeof get === "function" || (typeof get === 'undefined' ? 'undefined' : _typeof(get)) === "object") {
+				var viewMethod = get.View ? "View" : get.Render ? "Render" : get.view ? "view" : "render";
+				var compileComponent2Node = get && (get.View || get.Render || get.view || get.render);
+				if (compileComponent2Node) {
+					finalNode = (0, _str2node._parseString)(get[viewMethod]())[0];
+				} else {
+					finalNode = (0, _makeNode2._makeNode)(typeof get === "function" ? get() : get);
+				}
+			}
+			if (finalNode && finalNode.nodeType) {
+				(0, _patchDiff.replaceChildrenByDiff)(this._node, finalNode, [], []);
+				this._vars.content = finalNode.innerHTML;
+				this._vars.styling = finalNode.style.cssText;
+				this._vars.attrs = (0, _attrs2.attrs)(finalNode);
+			}
 			return this._quickRender ? this.render() : this;
 		}
 	}, {
@@ -413,7 +451,9 @@ function attrs(a) {
 
 	for (var i = 0, atr, len = attributes.length; i < len; i++) {
 		atr = attributes[i];
-		_a[atr.name] = atr.value;
+		if (atr.value) {
+			_a[atr.name] = atr.value;
+		}
 	}
 	return JSON.stringify(_a);
 };
@@ -1240,7 +1280,9 @@ var tezClass = function () {
 		value: function apply() {
 			var _this = this;
 
-			var opts = this.opts;
+			var opts = this.opts,
+			    render = this.render,
+			    tweenable = this.tweenable;
 			var lets = opts.lets,
 			    lets2 = opts.lets2,
 			    _lets = opts._lets;
@@ -1250,9 +1292,6 @@ var tezClass = function () {
 			this.mountedNodes.map(function (node, index) {
 				var dom = new Tez.DOMManager(node);
 				var now = Date.now();
-				var render = opts.render,
-				    tweenable = opts.tweenable;
-
 				var round = tweenable.roundLets;
 				var limitDec = tweenable.limitLetsDecimals;
 				var start = tweenable && (typeof tweenable.startTime === "function" ? tweenable.startTime.call(_this, node, index) : tweenable.startTime) || 0;

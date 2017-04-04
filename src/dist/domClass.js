@@ -5,15 +5,14 @@ import { _makeNode } from './makeNode';
 import { _getItem } from './getItem';
 
 class domClass {
-	constructor (node, vars) {
-	this._vars = vars = vars || {};
+	constructor(node, vars = {}) {
+	this._vars = vars;
 	if ( vars.quickRender === undefined ) {
 		vars.quickRender = true;
 	}
-	const _opts = this._opt = {};
-	this._node = typeof( node ) === "string" ? document.querySelector( node ) : node.length && node[ 0 ].nodeType ? node[ 0 ] : node;
+	this._opt = {};
+	this._node = typeof( node ) === 'string' ? document.querySelector( node ) : node.length && node[ 0 ].nodeType ? node[ 0 ] : node;
 	this._vnode = this._node.cloneNode( true );
-	this._nodeElem = this._vnode;
 	this._quickRender = vars.quickRender;
 	this._appendStore = [];
 	this.props = {};
@@ -87,11 +86,17 @@ class domClass {
 		const { _vars, _node, _vnode, _appendStore, _listOfNodes } = this;
 		let _vattrs = _vars.attrs;
 		let _attrs = attrs( _node );
-		let _diff;
+		let _diff, _diff2;
 		if ( _attrs !== _vattrs ) {
 			_diff = JSON.parse( _vattrs );
+			_diff2 = JSON.parse( _attrs);
 			for ( const p in _diff ) {
 				_node.setAttribute( p, _diff[ p ] );
+			}
+			for ( const p in _diff2 ) {
+				if (_diff[p] === undefined) {
+				_node.removeAttribute(p);
+				}
 			}
 			_vars.attrs = attrs( _vnode );
 		}
@@ -148,6 +153,32 @@ class domClass {
 			style[ p ] = cssText[ p ];
 		}
 		this._vars.styling = style.cssText;
+		return this._quickRender ? this.render() : this;
+	}
+	setView ( get ) {
+			let finalNode;
+		if ( typeof get === "string" ) {
+			let compileStr2Node = get.includes("</") || get.includes("/>");
+			if (compileStr2Node) {
+				finalNode = _parseString(get)[0];
+			} else {
+				finalNode = document.createElement(get);
+			}
+		} else if ( typeof get === "function" || typeof get === "object" ) {
+			let viewMethod = get.View ? "View" : get.Render ? "Render" : get.view ? "view" : "render";
+			let compileComponent2Node = get && (get.View || get.Render || get.view || get.render);
+			if (compileComponent2Node) {
+				finalNode = _parseString(get[viewMethod]())[0];
+			} else {
+				finalNode = _makeNode( typeof get === "function" ? get() : get );
+			}
+		}
+		if (finalNode && finalNode.nodeType) {
+		replaceChildrenByDiff( this._node, finalNode, [], [] );
+		this._vars.content = finalNode.innerHTML;
+		this._vars.styling = finalNode.style.cssText;
+		this._vars.attrs = attrs(finalNode);
+		}
 		return this._quickRender ? this.render() : this;
 	}
 	setContent( contents ) {

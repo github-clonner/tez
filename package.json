@@ -1,6 +1,6 @@
 {
   "name": "tez.js",
-  "version": "2.3.44",
+  "version": "2.5.0",
   "description": "Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and DOM Manager",
   "main": "Tez.js",
   "keywords": [
@@ -55,6 +55,7 @@
     "babel-core": "6.22.1",
     "babel-eslint": "7.1.1",
     "babel-loader": "6.2.10",
+	"babel-plugin-transform-proto-to-assign": "latest",
     "babel-plugin-add-module-exports": "0.1.2",
     "babel-preset-es2015": "6.22.0",
     "chai": "3.4.1",

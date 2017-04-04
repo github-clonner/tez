@@ -33,7 +33,9 @@ class tezClass {
 	}
 	apply() {
 		const {
-			opts
+			opts,
+			render,
+			tweenable
 		} = this;
 		let {
 			lets
@@ -45,10 +47,6 @@ class tezClass {
 		this.mountedNodes.map( ( node, index ) => {
 			const dom = new Tez.DOMManager( node );
 			const now = Date.now();
-			const {
-				render
-				, tweenable
-			} = opts;
 			const round = tweenable.roundLets;
 			const limitDec = tweenable.limitLetsDecimals;
 			const start = tweenable && ( typeof( tweenable.startTime ) === "function" ? tweenable.startTime.call( this, node, index ) : tweenable.startTime ) || 0;
