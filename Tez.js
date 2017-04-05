@@ -333,23 +333,7 @@ var domClass = function () {
 	}, {
 		key: 'setView',
 		value: function setView(get) {
-			var finalNode = void 0;
-			if (typeof get === "string") {
-				var compileStr2Node = get.includes("</") || get.includes("/>");
-				if (compileStr2Node) {
-					finalNode = (0, _str2node._parseString)(get)[0];
-				} else {
-					finalNode = document.createElement(get);
-				}
-			} else if (typeof get === "function" || (typeof get === 'undefined' ? 'undefined' : _typeof(get)) === "object") {
-				var viewMethod = get.View ? "View" : get.Render ? "Render" : get.view ? "view" : "render";
-				var compileComponent2Node = get && (get.View || get.Render || get.view || get.render);
-				if (compileComponent2Node) {
-					finalNode = (0, _str2node._parseString)(get[viewMethod]())[0];
-				} else {
-					finalNode = (0, _makeNode2._makeNode)(typeof get === "function" ? get() : get);
-				}
-			}
+			var finalNode = domClass.parseComponent(get);
 			if (finalNode && finalNode.nodeType) {
 				(0, _patchDiff.replaceChildrenByDiff)(this._node, finalNode, [], []);
 				this._vars.content = finalNode.innerHTML;
@@ -365,7 +349,7 @@ var domClass = function () {
 			if (!contents) {
 				return this._quickRender ? this.render() : this;
 			}
-			contents = typeof contents === "string" ? contents : contents.nodeType ? contents.outerHTML : contents;
+			contents = domClass.getComponentRendered(typeof contents === "string" ? contents : contents.nodeType ? contents.outerHTML : contents);
 			var rel = contents.includes("=") ? contents.charAt(0) === "+" ? 1 : contents.charAt(0) === "-" ? -1 : 0 : 0;
 
 			if (rel === 0) {
@@ -386,6 +370,43 @@ var domClass = function () {
 
 			this._vars.content = content;
 			return this._quickRender ? this.render() : this;
+		}
+	}], [{
+		key: 'getComponentRendered',
+		value: function getComponentRendered(get) {
+			if (typeof get === "string" || typeof get === "number") {
+				return get;
+			} else if (get === undefined || get === null) {
+				return '';
+			} else if (typeof get === "function" || (typeof get === 'undefined' ? 'undefined' : _typeof(get)) === "object") {
+				var viewMethod = get.View ? "View" : get.Render ? "Render" : get.view ? "view" : "render";
+				var compileComponent2Node = get && (get.View || get.Render || get.view || get.render);
+				return compileComponent2Node ? get[viewMethod]() : false;
+			}
+			return '';
+		}
+	}, {
+		key: 'parseComponent',
+		value: function parseComponent(get, multi) {
+			var finalNode = void 0;
+			if (get && get.nodeType) {
+				finalNode = get;
+			} else if (typeof get === "string") {
+				var compileStr2Node = get.includes("</") || get.includes("/>");
+				if (compileStr2Node) {
+					finalNode = (0, _str2node._parseString)(get);
+				} else {
+					finalNode = [document.createElement(get)];
+				}
+			} else if (typeof get === "function" || (typeof get === 'undefined' ? 'undefined' : _typeof(get)) === "object") {
+				var compileComponent2Node = domClass.getComponentRendered(get);
+				if (compileComponent2Node) {
+					finalNode = (0, _str2node._parseString)(compileComponent2Node);
+				} else {
+					finalNode = [(0, _makeNode2._makeNode)(typeof get === "function" ? get() : get)];
+				}
+			}
+			return multi ? finalNode : finalNode[0];
 		}
 	}]);
 
@@ -1280,12 +1301,12 @@ var tezClass = function () {
 		value: function apply() {
 			var _this = this;
 
-			var opts = this.opts,
-			    render = this.render,
-			    tweenable = this.tweenable;
+			var opts = this.opts;
 			var lets = opts.lets,
 			    lets2 = opts.lets2,
-			    _lets = opts._lets;
+			    _lets = opts._lets,
+			    tweenable = opts.tweenable,
+			    render = opts.render;
 
 			var _minVal = 0.001;
 			var _maxVal = 1;

@@ -1,6 +1,6 @@
 {
   "name": "tez.js",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and DOM Manager",
   "main": "Tez.js",
   "keywords": [
@@ -36,6 +36,8 @@
     "patch dom",
     "dom update",
     "harmony",
+	"component",
+	"class",
     "react-like",
     "optimization",
     "dom",

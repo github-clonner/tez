@@ -33,14 +33,14 @@ class tezClass {
 	}
 	apply() {
 		const {
-			opts,
-			render,
-			tweenable
+			opts
 		} = this;
 		let {
 			lets
 			, lets2
-			, _lets
+			, _lets,
+			tweenable,
+			render
 		} = opts;
 		const _minVal = 0.001;
 		const _maxVal = 1;

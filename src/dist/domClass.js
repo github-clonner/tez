@@ -5,28 +5,61 @@ import { _makeNode } from './makeNode';
 import { _getItem } from './getItem';
 
 class domClass {
-	constructor(node, vars = {}) {
-	this._vars = vars;
-	if ( vars.quickRender === undefined ) {
-		vars.quickRender = true;
+	constructor( node, vars = {} ) {
+		this._vars = vars;
+		if ( vars.quickRender === undefined ) {
+			vars.quickRender = true;
+		}
+		this._opt = {};
+		this._node = typeof( node ) === 'string' ? document.querySelector( node ) : node.length && node[ 0 ].nodeType ? node[ 0 ] : node;
+		this._vnode = this._node.cloneNode( true );
+		this._quickRender = vars.quickRender;
+		this._appendStore = [];
+		this.props = {};
+		this._listOfNodes = [];
+		if ( vars.styling === undefined ) {
+			vars.styling = this._vnode.style.cssText;
+		}
+		if ( vars.attrs === undefined ) {
+			vars.attrs = attrs( this._vnode );
+		}
+		if ( vars.content === undefined ) {
+			vars.content = this._vnode.innerHTML;
+		}
+		return this.render();
 	}
-	this._opt = {};
-	this._node = typeof( node ) === 'string' ? document.querySelector( node ) : node.length && node[ 0 ].nodeType ? node[ 0 ] : node;
-	this._vnode = this._node.cloneNode( true );
-	this._quickRender = vars.quickRender;
-	this._appendStore = [];
-	this.props = {};
-	this._listOfNodes = [];
-	if ( vars.styling === undefined ) {
-		vars.styling = this._vnode.style.cssText;
+	static getComponentRendered (get) {
+		if (typeof get === "string" || typeof get === "number") {
+			return get;
+		} else if (get === undefined || get === null) {
+			return '';
+		} else if ( typeof get === "function" || typeof get === "object" ) {
+		let viewMethod = get.View ? "View" : get.Render ? "Render" : get.view ? "view" : "render";
+			let compileComponent2Node = get && ( get.View || get.Render || get.view || get.render );
+		return compileComponent2Node ? get[ viewMethod ]() : false;
+		}
+		return '';
 	}
-	if ( vars.attrs === undefined ) {
-		vars.attrs = attrs( this._vnode );
-	}
-	if ( vars.content === undefined ) {
-		vars.content = this._vnode.innerHTML;
-	}
-	return this.render();
+	static parseComponent( get, multi ) {
+		let finalNode;
+		if ( get && get.nodeType ) {
+			finalNode = get;
+		} else if ( typeof get === "string" ) {
+			let compileStr2Node = get.includes( "</" ) || get.includes( "/>" );
+			if ( compileStr2Node ) {
+				finalNode = _parseString( get );
+			} else {
+				finalNode = [document.createElement( get )];
+			}
+		} else if ( typeof get === "function" || typeof get === "object" ) {
+			let compileComponent2Node = domClass.getComponentRendered(get);
+			if ( compileComponent2Node ) {
+				finalNode = _parseString( compileComponent2Node );
+			} else {
+				finalNode = [_makeNode( typeof get === "function" ? get() : get )];
+			}
+		}
+		return multi ? finalNode : finalNode[0];
 	}
 	createElement( opts ) {
 		let item;
@@ -41,16 +74,16 @@ class domClass {
 		return item;
 	}
 	sync( { props, content, styling, attrs } ) {
-		if (props) {
+		if ( props ) {
 			this.props = props;
 		}
-		if (content) {
+		if ( content ) {
 			this.vars.content = content;
 		}
-		if (styling) {
+		if ( styling ) {
 			this.vars.styling = styling;
 		}
-		if (attrs) {
+		if ( attrs ) {
 			this.vars.attrs = attrs;
 		}
 
@@ -89,13 +122,13 @@ class domClass {
 		let _diff, _diff2;
 		if ( _attrs !== _vattrs ) {
 			_diff = JSON.parse( _vattrs );
-			_diff2 = JSON.parse( _attrs);
+			_diff2 = JSON.parse( _attrs );
 			for ( const p in _diff ) {
 				_node.setAttribute( p, _diff[ p ] );
 			}
 			for ( const p in _diff2 ) {
-				if (_diff[p] === undefined) {
-				_node.removeAttribute(p);
+				if ( _diff[ p ] === undefined ) {
+					_node.removeAttribute( p );
 				}
 			}
 			_vars.attrs = attrs( _vnode );
@@ -155,29 +188,13 @@ class domClass {
 		this._vars.styling = style.cssText;
 		return this._quickRender ? this.render() : this;
 	}
-	setView ( get ) {
-			let finalNode;
-		if ( typeof get === "string" ) {
-			let compileStr2Node = get.includes("</") || get.includes("/>");
-			if (compileStr2Node) {
-				finalNode = _parseString(get)[0];
-			} else {
-				finalNode = document.createElement(get);
-			}
-		} else if ( typeof get === "function" || typeof get === "object" ) {
-			let viewMethod = get.View ? "View" : get.Render ? "Render" : get.view ? "view" : "render";
-			let compileComponent2Node = get && (get.View || get.Render || get.view || get.render);
-			if (compileComponent2Node) {
-				finalNode = _parseString(get[viewMethod]())[0];
-			} else {
-				finalNode = _makeNode( typeof get === "function" ? get() : get );
-			}
-		}
-		if (finalNode && finalNode.nodeType) {
-		replaceChildrenByDiff( this._node, finalNode, [], [] );
-		this._vars.content = finalNode.innerHTML;
-		this._vars.styling = finalNode.style.cssText;
-		this._vars.attrs = attrs(finalNode);
+	setView( get ) {
+		let finalNode = domClass.parseComponent( get );
+		if ( finalNode && finalNode.nodeType ) {
+			replaceChildrenByDiff( this._node, finalNode, [], [] );
+			this._vars.content = finalNode.innerHTML;
+			this._vars.styling = finalNode.style.cssText;
+			this._vars.attrs = attrs( finalNode );
 		}
 		return this._quickRender ? this.render() : this;
 	}
@@ -186,7 +203,7 @@ class domClass {
 		if ( !contents ) {
 			return this._quickRender ? this.render() : this;
 		}
-		contents = typeof( contents ) === "string" ? contents : contents.nodeType ? contents.outerHTML : contents;
+		contents = domClass.getComponentRendered(typeof( contents ) === "string" ? contents : contents.nodeType ? contents.outerHTML : contents);
 		const rel = contents.includes( "=" ) ? contents.charAt( 0 ) === "+" ? 1 : contents.charAt( 0 ) === "-" ? -1 : 0 : 0;
 
 		if ( rel === 0 ) {

@@ -65,13 +65,37 @@ var _helpers = new Tez.tezClass({
 		}
 	});
 
+class Markup {
+	static get params () {
+		return {
+			sanitize: false
+		}
+	}
+	static get value () {
+		return txt.value;
+	}
+	static marked () {
+		return marked(this.value, this.params);
+	}
+	static Render () {
+		return this.marked();
+	}
+}
+
+class Debounce {
+	static deb (func) {
+		setTimeout(func, 300);
+	}
+}
+
 _helpers.on("onupdate", function () {
 	_res.setContent(this.lets.marked());
 });
 
 function _key(time) {
-	_helpers.dispatch("onupdate");
-	requestAnimationFrame(_key);
+	//_helpers.dispatch("onupdate");
+	_res.setContent(Markup);
+	Debounce.deb(_key);
 }
 
 _key(0);

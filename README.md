@@ -1,7 +1,7 @@
 # tez
 [![Tez App][tez-image]][tez-url]
 
-Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and DOM Manager
+Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function, Component and DOM Manager
 
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
@@ -123,18 +123,20 @@ var dc = new Tez.domClass('body');
 This library works nice at IE10+, Chrome 35+, Firefox 35+, Opera 15+ and works partly at starting supported browsers.
 I am recommend you render at page-load so you never see issues. Change interval check at 300-ms for better result
 
-### Supported browsers
+### Supported browsers (UPDATED)
 
-* Android 4+
-* iOS 7+
-* Internet Explorer 9+
-* Chrome
-* Firefox
-* Opera 12+
+* Android 5+
+* iOS 9+
+* Internet Explorer 11+
+* Chrome 45+
+* Firefox 40+
+* Opera 18+
 
 
 # Shims required in some cases
+* `window.Class`
 * `window.Worker`
+* and much more
 
 # License
 * Apache 2.0
