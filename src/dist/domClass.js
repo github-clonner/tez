@@ -28,19 +28,33 @@ class domClass {
 		}
 		return this.render();
 	}
-	static getComponentRendered (get) {
+	static getComponentRendered (get, that) {
 		if (typeof get === "string" || typeof get === "number") {
 			return get;
 		} else if (get === undefined || get === null) {
 			return '';
 		} else if ( typeof get === "function" || typeof get === "object" ) {
+		if (typeof get === "function") {
+			let oldGet = get;
+			get = new get();
+			if (!(get.View || get.Render || get.view || get.render)) {
+				get = oldGet;
+			}
+		}
+		if (that) {
+			get.super = that;
+		}
+		if (!get.initted && get.init) {
+			get.init();
+			get.init = true;
+		}
 		let viewMethod = get.View ? "View" : get.Render ? "Render" : get.view ? "view" : "render";
 			let compileComponent2Node = get && ( get.View || get.Render || get.view || get.render );
 		return compileComponent2Node ? get[ viewMethod ]() : false;
 		}
 		return '';
 	}
-	static parseComponent( get, multi ) {
+	static parseComponent( get, multi, that ) {
 		let finalNode;
 		if ( get && get.nodeType ) {
 			finalNode = get;
@@ -52,7 +66,7 @@ class domClass {
 				finalNode = [document.createElement( get )];
 			}
 		} else if ( typeof get === "function" || typeof get === "object" ) {
-			let compileComponent2Node = domClass.getComponentRendered(get);
+			let compileComponent2Node = domClass.getComponentRendered(get, that);
 			if ( compileComponent2Node ) {
 				finalNode = _parseString( compileComponent2Node );
 			} else {
@@ -99,10 +113,15 @@ class domClass {
 		const __self__ = this;
 		const { _node } = this;
 
+		if ( eventFunc === undefined && typeof eventName === "function" ) {
+			eventFunc = eventName;
+			eventName = find;
+			find = null;
+		}
+
 		const __eventFunc__ = function( e ) {
 			eventFunc.call( __self__, this, e )
 		}
-
 		if ( eventFunc && find === null ) {
 			_node.addEventListener( eventName, __eventFunc__ );
 		} else if ( eventFunc ) {
@@ -189,7 +208,7 @@ class domClass {
 		return this._quickRender ? this.render() : this;
 	}
 	setView( get ) {
-		let finalNode = domClass.parseComponent( get );
+		let finalNode = domClass.parseComponent( get, false, this );
 		if ( finalNode && finalNode.nodeType ) {
 			replaceChildrenByDiff( this._node, finalNode, [], [] );
 			this._vars.content = finalNode.innerHTML;
@@ -203,7 +222,7 @@ class domClass {
 		if ( !contents ) {
 			return this._quickRender ? this.render() : this;
 		}
-		contents = domClass.getComponentRendered(typeof( contents ) === "string" ? contents : contents.nodeType ? contents.outerHTML : contents);
+		contents = domClass.getComponentRendered(typeof( contents ) === "string" ? contents : contents.nodeType ? contents.outerHTML : contents, this);
 		const rel = contents.includes( "=" ) ? contents.charAt( 0 ) === "+" ? 1 : contents.charAt( 0 ) === "-" ? -1 : 0 : 0;
 
 		if ( rel === 0 ) {

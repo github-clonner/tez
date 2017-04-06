@@ -47,33 +47,37 @@ html, body {
 <script src="https://unpkg.com/marked@0.3.6/marked.min.js"></script>
 <script src="../Tez.js"></script>
 <script>
-var body = document.body;
 
-var cont = body.querySelector('.container');
-var res = cont.querySelector('.result');
-var txt = cont.querySelector('.textarea-1');
-
-var _res = new Tez.domClass(res);
-
-class Markup {
-	constructor () {
-		this.params = { sanitize: false };
+class Counter {
+	static get count () {
+		return this._count || 0;
 	}
-	onChange () {
-		this.super.setContent(Markup);
+	static set count (count) {
+		this._count = count;
+	}
+	constructor () {
+		this.count = 0;
+	}
+	onClick (e) {
+		this.setView(Label);
 	}
 	init () {
-		txt.oninput = this.onChange.bind(this);
+		this.super.setEvent('click', this.onClick);
 	}
-	marked () {
-		return marked(txt.value, this.params);
-	}
-	Render () {
-		return this.marked();
+	render () {
+		return `<div>Counted: ${ Counter.count++ } times</div>`;
 	}
 }
 
-_res.setContent(Markup);
+class Label extends Counter {
+	render () {
+		return `<div>Counted ${ Counter.count }, so far ;)</div>`;
+	}
+}
+
+var imm = new Tez.domClass('.container');
+
+	imm.setView(Counter);
 </script>
 </body>
 </html>

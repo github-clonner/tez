@@ -13,10 +13,11 @@ import DOMManager from './dist/DOMManager';
 import domClass from './dist/domClass';
 import XHR from './dist/xhr';
 import hashURL from './dist/hash';
-import { createElement, makeNode } from './dist/makeNode';
+import { makeNode } from './dist/makeNode';
 import URLComponent from './dist/urlc';
 import tezClass from './dist/tezClass';
 import Data from './dist/data';
 import Wrapper from './dist/helper';
+import createElement from './dist/createElement';
 
-export { Data, createElement, PluginManager, FunctionManager, DiffManager, CompositeManager, LogicManager, CallManager, TweenManager, DOMManager, domClass, XHR, hashURL, URLComponent, tezClass };
+export { Data, makeNode, PluginManager, FunctionManager, DiffManager, CompositeManager, LogicManager, CallManager, TweenManager, DOMManager, domClass, XHR, hashURL, URLComponent, tezClass };

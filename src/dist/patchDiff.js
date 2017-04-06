@@ -90,7 +90,7 @@ export function replaceChildrenByDiff(_attrs, _vattrs, _childs, _childs2, substo
 		_attrs.innerHTML = _vattrs.innerHTML;
 	} else if (!_isEqualCSS) {
 		_attrs.style.cssText = _vattrs.style.cssText;
-	} else if (!_isEqualTag) {
+	} else if (!_isEqualTag && _attrs.parentNode !== null) {
 		_attrs.parentNode.replaceChild(_vattrs, _attrs);
 	} else if (!_isEqualAttr && _isEqualTag8CSS && _isEqualHTML) {
 		const _diff = extend(JSON.parse(_attrs2), JSON.parse(_attrs1));
