@@ -17,23 +17,17 @@ Dear users, this is not framework, just library that renders diffed (patched) el
 
 # Installation
 
-### `npm`
+### `npm` or `yarn`
 
-```sh
-// Install
-npm install --save tez.js
-
-// Build again
-npm run source // or npm run build
-
-// Test
-npm run test // Coming soon
+```bash
+$ npm install --save tez.js
+# or
+# yarn add tez.js
 ```
 
-### `yarn`
-```sh
-yarn add tez.js
-```
+### CDN Links
+* `<script src="https://cdn.jsdelivr.net/tez.js/latest/Tez.min.js"></script>`
+* Check out at [here](https://cdnjs.com/libraries/tez.js) for `version/release`
 
 ### Script loading
 

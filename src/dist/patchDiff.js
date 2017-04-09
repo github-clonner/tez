@@ -11,50 +11,62 @@ import {
 }
 from './getItem';
 
-export function replaceChildrenByDiff(_attrs, _vattrs, _childs, _childs2, substore) {
-	const _store = substore || [];
+const HTMLSyntaxTags = new RegExp("/>|<|>", "g");
+
+export function replaceChildrenByDiff(_attrs, _vattrs, _childs = [], _childs2 = [], _store = []) {
+	if ( !_attrs || !_vattrs) {
+		return null;
+	}
 	const _attrs1 = attrs(_attrs);
 	const _attrs2 = attrs(_vattrs);
 	let i = 0;
 	const _max = Math.max(_childs.length, _childs2.length);
 	let _attrTag = _attrs.tagName,
 	_vattrTag = _vattrs.tagName;
-	let _attrCSS = _attrs.style.cssText,
-	_vattrCSS = _vattrs.style.cssText;
+	let _isNT = _attrs.nodeType,
+		_isVNT = _vattrs.nodeType,
+		_isTN = _isNT === 3,
+		_isVTN = _isVNT === 3;
+	let _attrCSS = _attrs && _attrs.style && _attrs.style.cssText,
+	_vattrCSS = _vattrs && _vattrs.style && _vattrs.style.cssText;
 	let _attrHTML = _attrs.innerHTML,
 	_vattrHTML = _vattrs.innerHTML;
 	let _isEqualHTML = _attrHTML === _vattrHTML;
 	let _isEqualCSS = _attrCSS === _vattrCSS;
 	let _isEqualTag = _attrTag === _vattrTag;
 	let _isEqualTag8CSS = _isEqualCSS && _isEqualTag;
+	let _isEqualTextNode = _isTN === true && (_isTN === _isVTN);
 	let _isEqualAttr = _attrs === _attrs2;
 	let item;
 	var pi;
 	var ni;
 	var _tmp;
 	let len;
+	let itemReal, itemVirtual;
 	if (_max) {
 		while (i < _max) {
-			if (_childs[i] && !_childs2[i]) {
+			itemVirtual = _childs[i];
+			itemReal = _childs2[i];
+			if (itemVirtual && !itemReal) {
 				_store.push({
 					index: i,
 					diff: false,
-					virtual: _childs[i],
+					virtual: itemVirtual,
 					real: 'append'
 				});
-			} else if (_childs2[i] && !_childs[i]) {
+			} else if (itemReal && !_childs[i]) {
 				_store.push({
 					index: i,
 					diff: false,
 					virtual: 'append',
-					real: _childs2[i]
+					real: itemReal
 				});
-			} else if (_childs[i] && !_childs[i].isEqualNode(_childs2[i])) {
+			} else if (itemVirtual && itemVirtual.isEqualNode(itemReal) === false) {
 				_store.push({
 					index: i,
 					diff: true,
-					virtual: _childs[i],
-					real: _childs2[i]
+					virtual: itemVirtual,
+					real: itemReal
 				});
 			}
 			i++;
@@ -80,17 +92,16 @@ export function replaceChildrenByDiff(_attrs, _vattrs, _childs, _childs2, substo
 				if (rr.remove !== undefined) {
 					rr.remove();
 				} else {
-					attrs.replaceChild(rr);
+					_attrs.removeChild(rr);
 				}
 			} else if (item.diff) {
-				replaceChildrenByDiff(rr, vr, vr.children, rr.children);
+				let getChanged = replaceChildrenByDiff(rr, vr, vr.chilNodes, rr.chilNodes);
+				
 			}
 		}
-	} else if (_isEqualTag && !_isEqualHTML && _isEqualTag8CSS) {
-		_attrs.innerHTML = _vattrs.innerHTML;
-	} else if (!_isEqualCSS) {
-		_attrs.style.cssText = _vattrs.style.cssText;
-	} else if (!_isEqualTag && _attrs.parentNode !== null) {
+	} else if (_isEqualTextNode && _attrs.value !== _vattrs.value) {
+		_attrs.value = _vattrs.value;
+	} else if (!_isEqualTag && _attrs.parentNode !== null && _vattrs && _vattrs.nodeType) {
 		_attrs.parentNode.replaceChild(_vattrs, _attrs);
 	} else if (!_isEqualAttr && _isEqualTag8CSS && _isEqualHTML) {
 		const _diff = extend(JSON.parse(_attrs2), JSON.parse(_attrs1));
@@ -100,6 +111,21 @@ export function replaceChildrenByDiff(_attrs, _vattrs, _childs, _childs2, substo
 			}
 			_attrs.setAttribute(p, _diff[p]);
 		}
+	} else if (HTMLSyntaxTags.test(_attrHTML) && _attrHTML !== _vattrHTML) {
+		if (_attrs.childNodes && _attrs.childNodes.length) {
+			replaceChildrenByDiff(_attrs, _vattrs, _vattrs.childNodes, _attrs.childNodes);
+		} else {
+			console.log(_attrs.childNodes, _vattrs.childNodes);
+		_attrs.innerHTML = _vattrs.innerHTML;
+		}
+		// maybe later...
+	} else {
+		if (_attrs.textContent) {
+			_attrs.textContent = _vattrs.textContent;
+		} else {
+			_attrs.innerText = _vattrs.innerText;
+		}
 	}
 	return _attrs;
 };
+

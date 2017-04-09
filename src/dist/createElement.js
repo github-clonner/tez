@@ -1,6 +1,6 @@
 //Code adapted from https://gist.github.com/Dynalon/a8790a1fa66bfd2c26e1
 // Then improved by @dalisoft for tez.js
-let createElement = (tagName, attributes = [], ...children) => {
+let createElement = (tagName, attributes = {}, ...children) => {
 
     if (!tagName || typeof tagName !== 'string')
         throw new Error("tagName has to be defined, non-empty string");

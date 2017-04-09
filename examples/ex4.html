@@ -49,35 +49,33 @@ html, body {
 <script>
 
 class Counter {
-	static get count () {
-		return this._count || 0;
-	}
-	static set count (count) {
-		this._count = count;
-	}
-	constructor () {
-		this.count = 0;
+	constructor (_super_) {
+		this.onClick = this.onClick.bind(this);
 	}
 	onClick (e) {
-		this.setView(Label);
+		const { count } = this.props;
+		this.super.setView(this, { count : count + 1 });
 	}
 	init () {
 		this.super.setEvent('click', this.onClick);
 	}
 	render () {
-		return `<div>Counted: ${ Counter.count++ } times</div>`;
+		const { count } = this.props;
+		return `<div><span>Counted: </span><span>${ count }</span><span> times</span></div>`;
 	}
 }
 
 class Label extends Counter {
 	render () {
-		return `<div>Counted ${ Counter.count }, so far ;)</div>`;
+		const { count } = this.props;
+		return `<div>Hello ${ count }</div>`;
 	}
 }
 
 var imm = new Tez.domClass('.container');
 
-	imm.setView(Counter);
+	imm.setView(Counter, { count: 0 });
+	imm.setView(Label, { who : 'World' });
 </script>
 </body>
 </html>

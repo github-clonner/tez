@@ -216,7 +216,7 @@ var domClass = function () {
 			for (var p in props) {
 				this.props[p] = props[p];
 			}
-			return this;
+			return this._quickRender ? this.render() : this;
 		}
 	}, {
 		key: 'setEvent',
@@ -240,13 +240,13 @@ var domClass = function () {
 				find = _node.querySelector(find);
 				find.addEventListener(eventName, __eventFunc__);
 			}
-			return this;
+			return this._quickRender ? this.render() : this;
 		}
 	}, {
 		key: 'createFunction',
 		value: function createFunction(fn) {
 			fn.call(this);
-			return this;
+			return this._quickRender ? this.render() : this;
 		}
 	}, {
 		key: 'render',
@@ -293,7 +293,7 @@ var domClass = function () {
 			}
 			if (_appendStore.length || _attrs !== _vattrs) {
 				_vnode.innerHTML = _vattrs;
-				(0, _patchDiff.replaceChildrenByDiff)(_node, _vnode, _vnode.children, _node.children, _appendStore);
+				(0, _patchDiff.replaceChildrenByDiff)(_node, _vnode, _vnode.chilNodes, _node.chilNodes, _appendStore);
 				_vars.content = _vnode.innerHTML;
 			}
 			return this;
@@ -337,10 +337,9 @@ var domClass = function () {
 		}
 	}, {
 		key: 'setView',
-		value: function setView(get) {
-			var finalNode = domClass.parseComponent(get, false, this);
+		value: function setView(get, param) {
+			var finalNode = domClass.parseComponent(get, false, param, this);
 			if (finalNode && finalNode.nodeType) {
-				(0, _patchDiff.replaceChildrenByDiff)(this._node, finalNode, [], []);
 				this._vars.content = finalNode.innerHTML;
 				this._vars.styling = finalNode.style.cssText;
 				this._vars.attrs = (0, _attrs2.attrs)(finalNode);
@@ -349,12 +348,12 @@ var domClass = function () {
 		}
 	}, {
 		key: 'setContent',
-		value: function setContent(contents) {
+		value: function setContent(contents, param) {
 			var content = this._vars.content;
 			if (!contents) {
 				return this._quickRender ? this.render() : this;
 			}
-			contents = domClass.getComponentRendered(typeof contents === "string" ? contents : contents.nodeType ? contents.outerHTML : contents, this);
+			contents = domClass.getComponentRendered(typeof contents === "string" ? contents : contents.nodeType ? contents.outerHTML : contents, param, this);
 			var rel = contents.includes("=") ? contents.charAt(0) === "+" ? 1 : contents.charAt(0) === "-" ? -1 : 0 : 0;
 
 			if (rel === 0) {
@@ -378,35 +377,39 @@ var domClass = function () {
 		}
 	}], [{
 		key: 'getComponentRendered',
-		value: function getComponentRendered(get, that) {
+		value: function getComponentRendered(get, param, that) {
+			var _params = Object.assign({}, that ? that.props : {}, param);
+			if (that) {
+				that.props = _params;
+			}
 			if (typeof get === "string" || typeof get === "number") {
 				return get;
 			} else if (get === undefined || get === null) {
 				return '';
 			} else if (typeof get === "function" || (typeof get === 'undefined' ? 'undefined' : _typeof(get)) === "object") {
-				if (typeof get === "function") {
-					var oldGet = get;
-					get = new get();
-					if (!(get.View || get.Render || get.view || get.render)) {
-						get = oldGet;
-					}
+
+				var oldGet = get;
+				get = typeof get === "function" ? that && !get.initted ? new get(that) : get(that) : get;
+				get.props = _params;
+				if (!(get.Render || get.render)) {
+					get = oldGet;
 				}
 				if (that) {
 					get.super = that;
 				}
-				if (!get.initted && get.init) {
+				if (get && !get.initted && typeof get.init === "function") {
 					get.init();
-					get.init = true;
+					get.initted = true;
 				}
-				var viewMethod = get.View ? "View" : get.Render ? "Render" : get.view ? "view" : "render";
-				var compileComponent2Node = get && (get.View || get.Render || get.view || get.render);
-				return compileComponent2Node ? get[viewMethod]() : false;
+				var viewMethod = get.Render ? "Render" : "render";
+				var compileComponent2Node = get && (get.Render || get.render);
+				return compileComponent2Node && get[viewMethod] ? get[viewMethod]() : false;
 			}
 			return '';
 		}
 	}, {
 		key: 'parseComponent',
-		value: function parseComponent(get, multi, that) {
+		value: function parseComponent(get, multi, param, that) {
 			var finalNode = void 0;
 			if (get && get.nodeType) {
 				finalNode = get;
@@ -418,7 +421,7 @@ var domClass = function () {
 					finalNode = [document.createElement(get)];
 				}
 			} else if (typeof get === "function" || (typeof get === 'undefined' ? 'undefined' : _typeof(get)) === "object") {
-				var compileComponent2Node = domClass.getComponentRendered(get, that);
+				var compileComponent2Node = domClass.getComponentRendered(get, param, that);
 				if (compileComponent2Node) {
 					finalNode = (0, _str2node._parseString)(compileComponent2Node);
 				} else {
@@ -485,7 +488,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.attrs = attrs;
 function attrs(a) {
-	if (!a) return {};
+	if (!(a && a.attributes)) return '{}';
 	var _a = {};
 	var attributes = a.attributes;
 
@@ -834,7 +837,7 @@ var createElement = function createElement(tagName) {
         children[_key - 2] = arguments[_key];
     }
 
-    var attributes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    var attributes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 
     if (!tagName || typeof tagName !== 'string') throw new Error("tagName has to be defined, non-empty string");
@@ -1941,50 +1944,69 @@ var _extend = __webpack_require__(5);
 
 var _getItem2 = __webpack_require__(6);
 
-function replaceChildrenByDiff(_attrs, _vattrs, _childs, _childs2, substore) {
-	var _store = substore || [];
+var HTMLSyntaxTags = new RegExp("/>|<|>", "g");
+
+function replaceChildrenByDiff(_attrs, _vattrs) {
+	var _childs = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+
+	var _childs2 = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+
+	var _store = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
+
+	if (!_attrs || !_vattrs) {
+		return null;
+	}
 	var _attrs1 = (0, _attrs3.attrs)(_attrs);
 	var _attrs2 = (0, _attrs3.attrs)(_vattrs);
 	var i = 0;
 	var _max = Math.max(_childs.length, _childs2.length);
 	var _attrTag = _attrs.tagName,
 	    _vattrTag = _vattrs.tagName;
-	var _attrCSS = _attrs.style.cssText,
-	    _vattrCSS = _vattrs.style.cssText;
+	var _isNT = _attrs.nodeType,
+	    _isVNT = _vattrs.nodeType,
+	    _isTN = _isNT === 3,
+	    _isVTN = _isVNT === 3;
+	var _attrCSS = _attrs && _attrs.style && _attrs.style.cssText,
+	    _vattrCSS = _vattrs && _vattrs.style && _vattrs.style.cssText;
 	var _attrHTML = _attrs.innerHTML,
 	    _vattrHTML = _vattrs.innerHTML;
 	var _isEqualHTML = _attrHTML === _vattrHTML;
 	var _isEqualCSS = _attrCSS === _vattrCSS;
 	var _isEqualTag = _attrTag === _vattrTag;
 	var _isEqualTag8CSS = _isEqualCSS && _isEqualTag;
+	var _isEqualTextNode = _isTN === true && _isTN === _isVTN;
 	var _isEqualAttr = _attrs === _attrs2;
 	var item = void 0;
 	var pi;
 	var ni;
 	var _tmp;
 	var len = void 0;
+	var itemReal = void 0,
+	    itemVirtual = void 0;
 	if (_max) {
 		while (i < _max) {
-			if (_childs[i] && !_childs2[i]) {
+			itemVirtual = _childs[i];
+			itemReal = _childs2[i];
+			if (itemVirtual && !itemReal) {
 				_store.push({
 					index: i,
 					diff: false,
-					virtual: _childs[i],
+					virtual: itemVirtual,
 					real: 'append'
 				});
-			} else if (_childs2[i] && !_childs[i]) {
+			} else if (itemReal && !_childs[i]) {
 				_store.push({
 					index: i,
 					diff: false,
 					virtual: 'append',
-					real: _childs2[i]
+					real: itemReal
 				});
-			} else if (_childs[i] && !_childs[i].isEqualNode(_childs2[i])) {
+			} else if (itemVirtual && itemVirtual.isEqualNode(itemReal) === false) {
 				_store.push({
 					index: i,
 					diff: true,
-					virtual: _childs[i],
-					real: _childs2[i]
+					virtual: itemVirtual,
+					real: itemReal
 				});
 			}
 			i++;
@@ -2010,17 +2032,15 @@ function replaceChildrenByDiff(_attrs, _vattrs, _childs, _childs2, substore) {
 				if (rr.remove !== undefined) {
 					rr.remove();
 				} else {
-					_attrs3.attrs.replaceChild(rr);
+					_attrs.removeChild(rr);
 				}
 			} else if (item.diff) {
-				replaceChildrenByDiff(rr, vr, vr.children, rr.children);
+				var getChanged = replaceChildrenByDiff(rr, vr, vr.chilNodes, rr.chilNodes);
 			}
 		}
-	} else if (_isEqualTag && !_isEqualHTML && _isEqualTag8CSS) {
-		_attrs.innerHTML = _vattrs.innerHTML;
-	} else if (!_isEqualCSS) {
-		_attrs.style.cssText = _vattrs.style.cssText;
-	} else if (!_isEqualTag && _attrs.parentNode !== null) {
+	} else if (_isEqualTextNode && _attrs.value !== _vattrs.value) {
+		_attrs.value = _vattrs.value;
+	} else if (!_isEqualTag && _attrs.parentNode !== null && _vattrs && _vattrs.nodeType) {
 		_attrs.parentNode.replaceChild(_vattrs, _attrs);
 	} else if (!_isEqualAttr && _isEqualTag8CSS && _isEqualHTML) {
 		var _diff = (0, _extend.extend)(JSON.parse(_attrs2), JSON.parse(_attrs1));
@@ -2029,6 +2049,20 @@ function replaceChildrenByDiff(_attrs, _vattrs, _childs, _childs2, substore) {
 				continue;
 			}
 			_attrs.setAttribute(p, _diff[p]);
+		}
+	} else if (HTMLSyntaxTags.test(_attrHTML) && _attrHTML !== _vattrHTML) {
+		if (_attrs.childNodes && _attrs.childNodes.length) {
+			replaceChildrenByDiff(_attrs, _vattrs, _vattrs.childNodes, _attrs.childNodes);
+		} else {
+			console.log(_attrs.childNodes, _vattrs.childNodes);
+			_attrs.innerHTML = _vattrs.innerHTML;
+		}
+		// maybe later...
+	} else {
+		if (_attrs.textContent) {
+			_attrs.textContent = _vattrs.textContent;
+		} else {
+			_attrs.innerText = _vattrs.innerText;
 		}
 	}
 	return _attrs;
