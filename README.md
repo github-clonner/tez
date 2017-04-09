@@ -22,7 +22,7 @@ Dear users, this is not framework, just library that renders diffed (patched) el
 ```bash
 $ npm install --save tez.js
 # or
-# yarn add tez.js
+$ yarn add tez.js
 ```
 
 ### CDN Links
