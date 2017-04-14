@@ -70,22 +70,18 @@ class Counter {
 class Second {
 	constructor (view) {
 		this.onSecondChange = this.onSecondChange.bind(this);
-		this.tick = () => (setInterval(() => { this.onSecondChange(); }, 1000));
-		this.props = view.props;
-		this.props.secondElapsed = 0;
 		this.state = new State({countId:0});
+		this.tick = () => (setInterval(() => { this.onSecondChange(); }, 1000));
 	}
 	init () {
 		this.tick();
 	}
 	onSecondChange () {
-		const { secondElapsed } = this.props;
 		this.state.setState('countId', (prev) => (prev + 1));
-		this.super.setContent(this, { secondElapsed : this.state.getState('countId') });
+		this.super.setContent(this);
 	}
 	render () {
-		const { secondElapsed } = this.props;
-		return `Elapsed <span>${ secondElapsed }</span> seconds`;
+		return `Elapsed <span>${ this.state.getState('countId') }</span> seconds`;
 	}
 }
 
