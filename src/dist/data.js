@@ -1,8 +1,23 @@
+import * as ObjectMod from './un-freeze';
+
+let freezedMapProps = ["set", "clear", "delete"];
+let oldMapProto = Map.prototype;
+	freezedMapProps.map(prop => {
+		let oldMapProp = oldMapProto[prop];
+		oldMapProto[prop] = function (...args) {
+			if (ObjectMod.isFrozen(this)) {
+			return this;
+			}
+			oldMapProp.call(this, ...args);
+			return this;
+		}
+	});
+
 class Data {
 	static toMap(data) {
 		let _data = new Map();
 		for (let p in data) {
-			if (typeof data[p] === "object") {
+			if (typeof data[p] === "object" && !Array.isArray(data[p]) && data[p].size === undefined) {
 				_data.set(p, Data.toMap(data[p]));
 			} else {
 				_data.set(p, data[p]);
@@ -17,34 +32,44 @@ class Data {
 			return new Map().set(property, value);
 		}
 	}
-	constructor(data) {
+	constructor(data = {}) {
 		this.data = Data.toMap(data);
-		return this;
+		return this.freeze();
+	}
+	get size () {
+		return this.data.size;
 	}
 	createValue (property, value) {
 		return Data.createValue(property, value);
 	}
 	recursiveMatch(property, val) {
+		let getLastPropV = property.pop();
 		if (typeof(property) === "object") {
-			return property.reduce((prev, key, i) => {
-				if (prev.has(key)) {
-					if (val !== undefined) {
-						return prev.set(key, val);
-					} else {
-						return prev.get(key);
-					}
-				}
-				return prev;
-			}, this.data);
+			let dataMatch = ObjectMod.findObjByProp(this.data, getLastPropV);
+			if (dataMatch && val !== undefined) {
+				return dataMatch.set(getLastPropV, val);
+			} else {
+				return dataMatch;
+			}
 		}
-		return this.data[property] || null;
+		return this.data.get(property);
+	}
+	free () {
+		ObjectMod.defrost(this.data, true);
+		return this;
+	}
+	freeze () {
+		ObjectMod.freeze(this.data, true);
+		return this;
 	}
 	set(property, value) {
+		this.free();
 		if (typeof(property) === "string") {
-			this.data[property] = value;
+			this.data.set(property, value);
 		} else if (Array.isArray(property)) {
 			this.recursiveMatch(property, value);
 		}
+		this.freeze();
 		return this;
 	}
 	get(property) {

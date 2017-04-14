@@ -48,8 +48,10 @@ html, body {
 <script src="../Tez.js"></script>
 <script>
 
+const { Data, State, domClass } = Tez;
+
 class Counter {
-	constructor (_super_) {
+	constructor (view) {
 		this.onClick = this.onClick.bind(this);
 	}
 	onClick (e) {
@@ -61,21 +63,36 @@ class Counter {
 	}
 	render () {
 		const { count } = this.props;
-		return `<div><span>Counted: </span><span>${ count }</span><span> times</span></div>`;
+		return `<div>Counted: <span>${ count }</span> times</div>`;
 	}
 }
 
-class Label extends Counter {
+class Second {
+	constructor (view) {
+		this.onSecondChange = this.onSecondChange.bind(this);
+		this.tick = () => (setInterval(() => { this.onSecondChange(); }, 1000));
+		this.props = view.props;
+		this.props.secondElapsed = 0;
+		this.state = new State({countId:0});
+	}
+	init () {
+		this.tick();
+	}
+	onSecondChange () {
+		const { secondElapsed } = this.props;
+		this.state.setState('countId', (prev) => (prev + 1));
+		this.super.setContent(this, { secondElapsed : this.state.getState('countId') });
+	}
 	render () {
-		const { count } = this.props;
-		return `<div>Hello ${ count }</div>`;
+		const { secondElapsed } = this.props;
+		return `Elapsed <span>${ secondElapsed }</span> seconds`;
 	}
 }
 
-var imm = new Tez.domClass('.container');
+var imm = new domClass('.container');
 
-	imm.setView(Counter, { count: 0 });
-	imm.setView(Label, { who : 'World' });
+	imm.setContent(Second);
+	//imm.setContent(Label, { who : 'World' });
 </script>
 </body>
 </html>

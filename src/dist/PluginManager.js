@@ -1,3 +1,0 @@
-let PluginManager = {};
-
-export { PluginManager };

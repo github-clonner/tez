@@ -175,7 +175,7 @@ class domClass {
 		}
 		if ( _appendStore.length || _attrs !== _vattrs ) {
 			_vnode.innerHTML = _vattrs;
-			replaceChildrenByDiff( _node, _vnode, _vnode.chilNodes, _node.chilNodes, _appendStore );
+			replaceChildrenByDiff( _node, _vnode, _vnode.childNodes, _node.childNodes, _appendStore );
 			_vars.content = _vnode.innerHTML;
 		}
 		return this;
@@ -226,6 +226,7 @@ class domClass {
 			return this._quickRender ? this.render() : this;
 		}
 		contents = domClass.getComponentRendered(typeof( contents ) === "string" ? contents : contents.nodeType ? contents.outerHTML : contents, param, this);
+		contents = contents.nodeType ? contents.outerHTML : contents;
 		const rel = contents.includes( "=" ) ? contents.charAt( 0 ) === "+" ? 1 : contents.charAt( 0 ) === "-" ? -1 : 0 : 0;
 
 		if ( rel === 0 ) {

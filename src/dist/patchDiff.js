@@ -11,7 +11,7 @@ import {
 }
 from './getItem';
 
-const HTMLSyntaxTags = new RegExp("/>|<|>", "g");
+const HTMLSyntaxTags = new RegExp("&lt;|&gt;|/>|<|>", "g");
 
 export function replaceChildrenByDiff(_attrs, _vattrs, _childs = [], _childs2 = [], _store = []) {
 	if ( !_attrs || !_vattrs) {
@@ -95,8 +95,11 @@ export function replaceChildrenByDiff(_attrs, _vattrs, _childs = [], _childs2 = 
 					_attrs.removeChild(rr);
 				}
 			} else if (item.diff) {
-				let getChanged = replaceChildrenByDiff(rr, vr, vr.chilNodes, rr.chilNodes);
-				
+				if (rr.tagName === undefined || vr.tagName === undefined || rr.tagName !== vr.tagName) {
+				_attrs.replaceChild(vr, rr);
+				} else {
+				replaceChildrenByDiff(rr, vr, vr.childNodes, rr.childNodes);
+				}
 			}
 		}
 	} else if (_isEqualTextNode && _attrs.value !== _vattrs.value) {
@@ -111,12 +114,13 @@ export function replaceChildrenByDiff(_attrs, _vattrs, _childs = [], _childs2 = 
 			}
 			_attrs.setAttribute(p, _diff[p]);
 		}
-	} else if (HTMLSyntaxTags.test(_attrHTML) && _attrHTML !== _vattrHTML) {
+	} else if (HTMLSyntaxTags.test(_vattrHTML) && _attrHTML !== _vattrHTML) {
 		if (_attrs.childNodes && _attrs.childNodes.length) {
 			replaceChildrenByDiff(_attrs, _vattrs, _vattrs.childNodes, _attrs.childNodes);
+		} else if (_attrs.isEqualNode(_vattrs)) {
+			_attrs.innerHTML = _vattrs.innerHTML;
 		} else {
-			console.log(_attrs.childNodes, _vattrs.childNodes);
-		_attrs.innerHTML = _vattrs.innerHTML;
+			_attrs.parentNode.replaceChild(_vattrs, _attrs);
 		}
 		// maybe later...
 	} else {
