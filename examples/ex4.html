@@ -68,26 +68,67 @@ class Counter {
 }
 
 class Second {
-	constructor (view) {
+	constructor() {
 		this.onSecondChange = this.onSecondChange.bind(this);
-		this.state = new State({countId:0});
-		this.tick = () => (setInterval(() => { this.onSecondChange(); }, 1000));
+		this.state = new State({
+				countId: 0
+			});
+		this.tick = () => (setInterval(() => {
+				this.onSecondChange();
+			}, 1000));
+		return this;
 	}
-	init () {
+	init() {
 		this.tick();
+		return this;
 	}
-	onSecondChange () {
+	onSecondChange() {
 		this.state.setState('countId', (prev) => (prev + 1));
 		this.super.setContent(this);
+		return this;
 	}
-	render () {
+	render() {
 		return `Elapsed <span>${ this.state.getState('countId') }</span> seconds`;
+	}
+}
+
+class Button extends Second {
+	constructor(view) {
+		super();
+		this.props = view.props;
+		this.textExampe = [' was created ', ' seconds before'];
+	}
+	init() {
+		super.init();
+		this.super.setEvent('click', (e) => {
+			this.textExampe[0] = ' was clicked ';
+			this.state.setState('countId', 0);
+		});
+	}
+	render() {
+		const {
+			attrs = '',
+			value = 'Button',
+			className = '',
+			size = 'tui-default-size',
+			theme = 'tui-default-theme'
+		} = this.props;
+		return `
+		<div 
+		class="
+		tui-button 
+		${ className }
+		${ size } 
+		${ theme } 
+		${ attrs }">
+		${ value }${ this.textExampe[0] }<span>${ this.state.getState('countId') }${ this.textExampe[1] }</span>
+		</div>`
 	}
 }
 
 var imm = new domClass('.container');
 
-	imm.setContent(Second);
+	imm.setContent(Button);
 	//imm.setContent(Label, { who : 'World' });
 </script>
 </body>
