@@ -15,6 +15,14 @@ Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function, Com
 # Note
 Dear users, this is not framework, just library that renders diffed (patched) element. This script inspired by amazing "React" and this script has own diff manager, not uses "VDOM" script.
 
+# *IMPORTANT*
+* Hello, users. Who using this app, thanks. But i am highly recommend you move to "React.js" for better complexity, if you want simple and lightweight for minimal app, so continue use this app.
+* I am deprecate `<Tez method="Data">` in next release
+* I am deprecate `<Tez method="XHR">` in next release
+* I am deprecate `<Tez method="State">` in next release
+* I am deprecate `<Tez method="Hash">` in next release
+* I am deprecate `<Tez method="URLComponent">` in next release
+
 # Installation
 
 ### `npm` or `yarn`

@@ -60,7 +60,7 @@ class Markup {
 		this.params = { sanitize: false };
 	}
 	onChange () {
-		this.super.setContent(Markup);
+		this.super.setContent(this);
 	}
 	init () {
 		txt.oninput = this.onChange.bind(this);

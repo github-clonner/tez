@@ -3,6 +3,7 @@ import { _parseString } from './str2node';
 import { replaceChildrenByDiff } from './patchDiff';
 import { _makeNode } from './makeNode';
 import { _getItem } from './getItem';
+import createElement from './createElement';
 
 class domClass {
 	constructor( node, vars = {} ) {
@@ -14,6 +15,7 @@ class domClass {
 		this._node = typeof( node ) === 'string' ? document.querySelector( node ) : node.length && node[ 0 ].nodeType ? node[ 0 ] : node;
 		this._vnode = this._node.cloneNode( true );
 		this._quickRender = vars.quickRender;
+		this._disableSafeParse = vars.disableSafeParse;
 		this._appendStore = [];
 		this.props = {};
 		this._listOfNodes = [];
@@ -139,7 +141,7 @@ class domClass {
 		return this._quickRender ? this.render() : this;
 	}
 	render() {
-		const { _vars, _node, _vnode, _appendStore, _listOfNodes } = this;
+		const { _vars, _node, _vnode, _appendStore, _listOfNodes, _disableSafeParse } = this;
 		let _vattrs = _vars.attrs;
 		let _attrs = attrs( _node );
 		let _diff, _diff2;
@@ -164,6 +166,9 @@ class domClass {
 		}
 		_vattrs = _vars.content;
 		_attrs = _node.innerHTML;
+		if ( !_disableSafeParse ) {
+			_vattrs = _vattrs.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		}
 		for ( let i = 0, idx, len = _listOfNodes.length; i < len; i++ ) {
 			idx = _appendStore.length;
 			_appendStore[ idx ] = {

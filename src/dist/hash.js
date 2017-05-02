@@ -1,6 +1,6 @@
 class hashURL {
- constructor( opts = {} ) {
-	this._prefix = opts.prefix || "!/#";
+ constructor( { prefix = '!/#' } = {} ) {
+	this._prefix = prefix || "!/#";
 	this._hashTags = true;
 	this._changed = false;
 	return this;
@@ -11,7 +11,7 @@ class hashURL {
 	getLocationHash() {
 		return window.location.hash.substr( 1 );
 	}
-	getChanged() {
+	isChanged() {
 		return this._changed;
 	}
 	setHash( hash ) {

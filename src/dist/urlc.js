@@ -18,18 +18,18 @@ class URLComponent {
 		return this;
 	}
 	then( fn ) {
-		if ( this.loadRealLink && this.hash.getChanged() ) {
+		if ( this.loadRealLink && this.hash.isChanged() ) {
 			const __self__ = this.xhr;
 			const __self__hash__ = this.hash;
 			let __eventFunc__;
 			this.xhr.on( 'load', __eventFunc__ = function() {
 				const args = ARRAY_SLICE.call( arguments );
-				if ( __self__hash__.getChanged() ) {
+				if ( __self__hash__.isChanged() ) {
 					fn.apply( this, args );
 					__self__.off( 'load', __eventFunc__ );
 				}
 			} );
-		} else if ( this.hash.getChanged() ) {
+		} else if ( this.hash.isChanged() ) {
 			fn.call( this, {
 				onlyURLChanged: true
 			} );
