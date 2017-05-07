@@ -1,6 +1,6 @@
 {
   "name": "tez.js",
-  "version": "9.2.1",
+  "version": "9.2.2",
   "description": "Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and DOM Manager",
   "module": "dist/index.js",
   "main": "Tez.js",

@@ -1,4 +1,12 @@
-import { createElement }, Tez from 'tez.js';
+# Docs for Tez
+
+## Constructor
+
+### Usage
+
+```javascript
+
+	import { createElement }, Tez from 'tez.js';
 
 /** @jsx createElement */
 
@@ -22,3 +30,5 @@ class JSXTemplate {
 const imm = new Tez('.container');
 
 imm.setView(Counter);
+
+```

@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v9.2.2
+
+## Fixes
+* Documentation reduced due of reduced flexibility our js, closes #4
+
 ## v9.2.1
 
 ## BREAKING CHANGE
@@ -15,6 +20,9 @@
 
 ## Size
 * size slightly reduced
+
+## NOTE
+* if you want `Data` or `State` or etc, please see `5.x.x` or `2.x.x`
 
 ## v5.1.3
 

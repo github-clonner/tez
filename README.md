@@ -56,46 +56,12 @@ or via [jsdelivr](http://www.jsdelivr.com/) (Thanks to jsdelivr)
 * Cross-browser apps
 * Super-fast Web-apps (on Chrome runs almost without redraw)
 
-# What it does
-* Avoids duplicated rendering
-* Minimizes reflow as possible and keeps as low as can
-* Minimize relayout
-* Optimizes page responsiveness
-* Avoids fully-rerendering of page by changing just changed nodes
-* Inline Worker function calls
-* Inline rAF function calls
-* Inline instant function calls
-* Composite Management
-* Logic Management
-* Call Management
-* DOM Management
-
 # Example of What it does
 
 ### Example 1
 
 ```javascript
-// SuperAnimation.js is for example, but plug-in included for my private stuff
-new SuperAnimation.Tween('.container', {
-	xp: 0
-}).to({
-	xp: 200,
-	tez: {
-		render: function (node, props) {
-			node.setContent(`<div class=\"ball\" style=\"transform:translate3d(${ props.xp }px, 0px, 0px)\"></div>`); // #1
-			//node._node.innerHTML = `<div class=\"ball\" style=\"transform:translate3d(${ props.xp }px, 0px, 0px)\"></div>` #2
-		}
-	}
-}, 2000).start();
-
-```
-* \#1: Effective way changing content, redraws only changed stuffs, not entire layer or html (inner, outer) or may change html once if needed, but very fast and power effecient.
-* \#2: Default html way, innerHTML changes entire layer and redraws, this affects to performance too and this is ineffecient.
-
-### Example 2
-
-```javascript
-var dc = new Tez.domClass('body');
+var dc = new Tez.domClass('body', { disableSafeParse: true });
 
 	dc.setContent("+=<div id=\"loader\"></div>");
 
@@ -103,16 +69,7 @@ var dc = new Tez.domClass('body');
 ```
 
 # Methods
-* `FunctionManager`
-* `CompositeManager`
-* `LogicManager`
-* `CallManager`
-* `DOMManager`
-* `TweenManager`
-* `DiffManager`
-* `Collector`
-* `domClass`
-* `tezClass`
+* `createElement` - for `JSX` element creation
 
 # Compatibility
 
@@ -128,12 +85,6 @@ I am recommend you render at page-load so you never see issues. Change interval 
 * Chrome 45+
 * Firefox 40+
 * Opera 18+
-
-
-# Shims required in some cases
-* `window.Class`
-* `window.Worker`
-* and much more
 
 # License
 * Apache 2.0
