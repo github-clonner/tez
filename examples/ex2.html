@@ -53,7 +53,10 @@ var cont = body.querySelector('.container');
 var res = cont.querySelector('.result');
 var txt = cont.querySelector('.textarea-1');
 
-var _res = new Tez.domClass(res);
+const { createElement } = Tez;
+console.log(Tez);
+
+var _res = new Tez(res, { disableSafeParse : true });
 
 class Markup {
 	constructor () {

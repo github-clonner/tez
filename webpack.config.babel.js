@@ -20,8 +20,7 @@ const config = {
   output: {
     path: __dirname,
     filename: outputFile,
-	libraryTarget: 'umd',
-	library: libraryName
+	libraryTarget: 'umd'
   },
   module: {
 	loaders: [

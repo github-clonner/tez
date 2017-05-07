@@ -3,10 +3,10 @@
 		module.exports = factory();
 	else if(typeof define === 'function' && define.amd)
 		define([], factory);
-	else if(typeof exports === 'object')
-		exports["Tez"] = factory();
-	else
-		root["Tez"] = factory();
+	else {
+		var a = factory();
+		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
+	}
 })(this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 18);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -84,142 +84,36 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+    value: true
 });
+//Code adapted from https://gist.github.com/Dynalon/a8790a1fa66bfd2c26e1
+// Then improved by @dalisoft for tez.js
+var createElement = function createElement(tagName, attributes) {
+    for (var _len = arguments.length, children = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+        children[_key - 2] = arguments[_key];
+    }
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+    if (!tagName || typeof tagName !== 'string') throw new Error("tagName has to be defined, non-empty string");
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+    children = children || [];
+    attributes = attributes || [];
 
-var _unFreeze = __webpack_require__(17);
+    var element = document.createElement(tagName);
+    var attrKeys = Object.keys(attributes);
 
-var ObjectMod = _interopRequireWildcard(_unFreeze);
+    attrKeys.map(function (attribute_key) {
+        var attribute_value = attributes[attribute_key];
+        element.setAttribute(attribute_key, attribute_value);
+    });
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+    children.map(function (child) {
+        if (child instanceof HTMLElement) element.appendChild(child);else if (typeof child === 'string' || typeof child === 'number') element.appendChild(document.createTextNode(child));
+    });
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+    return element;
+};
 
-var freezedMapProps = ["set", "clear", "delete"];
-var oldMapProto = Map.prototype;
-freezedMapProps.map(function (prop) {
-	var oldMapProp = oldMapProto[prop];
-	oldMapProto[prop] = function () {
-		if (ObjectMod.isFrozen(this)) {
-			return this;
-		}
-
-		for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-			args[_key] = arguments[_key];
-		}
-
-		oldMapProp.call.apply(oldMapProp, [this].concat(args));
-		return this;
-	};
-});
-
-var Data = function () {
-	_createClass(Data, null, [{
-		key: "toMap",
-		value: function toMap(data) {
-			var _data = new Map();
-			for (var p in data) {
-				if (_typeof(data[p]) === "object" && !Array.isArray(data[p]) && data[p].size === undefined) {
-					_data.set(p, Data.toMap(data[p]));
-				} else {
-					_data.set(p, data[p]);
-				}
-			}
-			return _data;
-		}
-	}, {
-		key: "createValue",
-		value: function createValue(property, value) {
-			if ((typeof property === "undefined" ? "undefined" : _typeof(property)) === "object") {
-				return Data.toMap(property);
-			} else if (typeof property === "string" && value !== undefined) {
-				return new Map().set(property, value);
-			}
-		}
-	}]);
-
-	function Data() {
-		var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-		_classCallCheck(this, Data);
-
-		this.data = Data.toMap(data);
-		return this.freeze();
-	}
-
-	_createClass(Data, [{
-		key: "createValue",
-		value: function createValue(property, value) {
-			return Data.createValue(property, value);
-		}
-	}, {
-		key: "recursiveMatch",
-		value: function recursiveMatch(property, val) {
-			var getLastPropV = property.pop();
-			if ((typeof property === "undefined" ? "undefined" : _typeof(property)) === "object") {
-				var dataMatch = ObjectMod.findObjByProp(this.data, getLastPropV);
-				if (dataMatch && val !== undefined) {
-					return dataMatch.set(getLastPropV, val);
-				} else {
-					return dataMatch;
-				}
-			}
-			return this.data.get(property);
-		}
-	}, {
-		key: "free",
-		value: function free() {
-			ObjectMod.defrost(this.data, true);
-			return this;
-		}
-	}, {
-		key: "freeze",
-		value: function freeze() {
-			ObjectMod.freeze(this.data, true);
-			return this;
-		}
-	}, {
-		key: "set",
-		value: function set(property, value) {
-			this.free();
-			if (typeof property === "string") {
-				this.data.set(property, value);
-			} else if (Array.isArray(property)) {
-				this.recursiveMatch(property, value);
-			}
-			this.freeze();
-			return this;
-		}
-	}, {
-		key: "get",
-		value: function get(property) {
-			if ((typeof property === "undefined" ? "undefined" : _typeof(property)) === "object") {
-				return this.recursiveMatch(property);
-			} else {
-				return this.data.get(property);
-			}
-			return this;
-		}
-	}, {
-		key: "has",
-		value: function has(property) {
-			return this.get(property) !== undefined;
-		}
-	}, {
-		key: "size",
-		get: function get() {
-			return this.data.size;
-		}
-	}]);
-
-	return Data;
-}();
-
-exports.default = Data;
+exports.default = createElement;
 
 /***/ }),
 /* 1 */
@@ -271,7 +165,7 @@ exports.ARRAY_SLICE = ARRAY_SLICE;
 exports.FUNC_STR = FUNC_STR;
 exports.WORKER_SUPPORT = WORKER_SUPPORT;
 exports.ROOT = ROOT;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
 /***/ }),
 /* 3 */
@@ -328,45 +222,6 @@ function _getItem(item, parent) {
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-//Code adapted from https://gist.github.com/Dynalon/a8790a1fa66bfd2c26e1
-// Then improved by @dalisoft for tez.js
-var createElement = function createElement(tagName, attributes) {
-    for (var _len = arguments.length, children = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-        children[_key - 2] = arguments[_key];
-    }
-
-    if (!tagName || typeof tagName !== 'string') throw new Error("tagName has to be defined, non-empty string");
-
-    children = children || [];
-    attributes = attributes || [];
-
-    var element = document.createElement(tagName);
-    var attrKeys = Object.keys(attributes);
-
-    attrKeys.map(function (attribute_key) {
-        var attribute_value = attributes[attribute_key];
-        element.setAttribute(attribute_key, attribute_value);
-    });
-
-    children.map(function (child) {
-        if (child instanceof HTMLElement) element.appendChild(child);else if (typeof child === 'string' || typeof child === 'number') element.appendChild(document.createTextNode(child));
-    });
-
-    return element;
-};
-
-exports.default = createElement;
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
@@ -376,13 +231,19 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _attrs2 = __webpack_require__(1);
 
-var _str2node = __webpack_require__(16);
+var _str2node = __webpack_require__(11);
 
-var _patchDiff = __webpack_require__(15);
+var _patchDiff = __webpack_require__(10);
 
-var _makeNode2 = __webpack_require__(14);
+var _makeNode2 = __webpack_require__(9);
 
 var _getItem2 = __webpack_require__(3);
+
+var _createElement = __webpack_require__(0);
+
+var _createElement2 = _interopRequireDefault(_createElement);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -400,6 +261,7 @@ var domClass = function () {
 		this._node = typeof node === 'string' ? document.querySelector(node) : node.length && node[0].nodeType ? node[0] : node;
 		this._vnode = this._node.cloneNode(true);
 		this._quickRender = vars.quickRender;
+		this._disableSafeParse = vars.disableSafeParse;
 		this._appendStore = [];
 		this.props = {};
 		this._listOfNodes = [];
@@ -497,7 +359,8 @@ var domClass = function () {
 			    _node = this._node,
 			    _vnode = this._vnode,
 			    _appendStore = this._appendStore,
-			    _listOfNodes = this._listOfNodes;
+			    _listOfNodes = this._listOfNodes,
+			    _disableSafeParse = this._disableSafeParse;
 
 			var _vattrs = _vars.attrs;
 			var _attrs = (0, _attrs2.attrs)(_node);
@@ -524,6 +387,9 @@ var domClass = function () {
 			}
 			_vattrs = _vars.content;
 			_attrs = _node.innerHTML;
+			if (!_disableSafeParse) {
+				_vattrs = _vattrs.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+			}
 			for (var i = 0, idx, len = _listOfNodes.length; i < len; i++) {
 				idx = _appendStore.length;
 				_appendStore[idx] = {
@@ -683,278 +549,7 @@ var domClass = function () {
 exports.default = domClass;
 
 /***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var hashURL = function () {
-	function hashURL() {
-		var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-		_classCallCheck(this, hashURL);
-
-		this._prefix = opts.prefix || "!/#";
-		this._hashTags = true;
-		this._changed = false;
-		return this;
-	}
-
-	_createClass(hashURL, [{
-		key: "getHash",
-		value: function getHash(hash) {
-			return this._prefix + hash;
-		}
-	}, {
-		key: "getLocationHash",
-		value: function getLocationHash() {
-			return window.location.hash.substr(1);
-		}
-	}, {
-		key: "getChanged",
-		value: function getChanged() {
-			return this._changed;
-		}
-	}, {
-		key: "setHash",
-		value: function setHash(hash) {
-			if (this.getHash(hash) !== this.getLocationHash()) {
-				window.location.hash = this.getHash(hash);
-				this._changed = true;
-			} else {
-				this._changed = false;
-			}
-			return this;
-		}
-	}, {
-		key: "set",
-		value: function set(url) {
-			return this.setHash(url);
-		}
-	}]);
-
-	return hashURL;
-}();
-
-;
-exports.default = hashURL;
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _data = __webpack_require__(0);
-
-var _data2 = _interopRequireDefault(_data);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var State = function () {
-	function State() {
-		var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-		_classCallCheck(this, State);
-
-		this.state = new _data2.default(state);
-		return this;
-	}
-
-	_createClass(State, [{
-		key: "setState",
-		value: function setState(p, v) {
-			if (typeof p === "function") {
-				p(this.state);
-			} else if (typeof p === "string" || Array.isArray(p)) {
-				this.state.set(p, typeof v === "function" ? v(this.state.get(p)) : v);
-			}
-			return this;
-		}
-	}, {
-		key: "getState",
-		value: function getState(prop) {
-			return prop ? this.state.get(prop) : this.state;
-		}
-	}]);
-
-	return State;
-}();
-
-exports.default = State;
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var URLComponent = function () {
-	function URLComponent() {
-		var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-		_classCallCheck(this, URLComponent);
-
-		this.hash = new Tez.hashURL({
-			prefix: opts.prefixURL
-		});
-		this.async = opts.async !== undefined ? opts.async : true;
-		this.xhr = new Tez.XHR();
-		this.loadRealLink = opts.loadRealLink !== undefined ? opts.loadRealLink : true;
-		return this;
-	}
-
-	_createClass(URLComponent, [{
-		key: 'request',
-		value: function request(url, method, withCredentials) {
-			this.hash.set(url);
-			if (this.loadRealLink) {
-				this.xhr.request(method || "GET", url, this.async);
-				this.xhr.withCredentials(withCredentials);
-				this.xhr.send();
-			}
-			return this;
-		}
-	}, {
-		key: 'then',
-		value: function then(fn) {
-			if (this.loadRealLink && this.hash.getChanged()) {
-				var __self__ = this.xhr;
-				var __self__hash__ = this.hash;
-				var _eventFunc__ = void 0;
-				this.xhr.on('load', _eventFunc__ = function __eventFunc__() {
-					var args = ARRAY_SLICE.call(arguments);
-					if (__self__hash__.getChanged()) {
-						fn.apply(this, args);
-						__self__.off('load', _eventFunc__);
-					}
-				});
-			} else if (this.hash.getChanged()) {
-				fn.call(this, {
-					onlyURLChanged: true
-				});
-			}
-			return this;
-		}
-	}]);
-
-	return URLComponent;
-}();
-
-;
-
-exports.default = URLComponent;
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var XHR = function () {
-	function XHR() {
-		var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-		_classCallCheck(this, XHR);
-
-		this._xhr = new XMLHttpRequest();
-		var xhr = this;
-		if (opts.load) {
-			xhr.on('load', opts.load);
-		}
-		if (opts.url) {
-			xhr.request(opts.method || "GET", opts.url, opts.async);
-			xhr.send(opts.params);
-		}
-		if (opts.events) {
-			opts.events.map(function (event) {
-				xhr.on(event.name, event.callback);
-			});
-		}
-		return this;
-	}
-
-	_createClass(XHR, [{
-		key: "on",
-		value: function on(ev, fn) {
-			this._xhr.addEventListener(ev, fn);
-			return this;
-		}
-	}, {
-		key: "withCredentials",
-		value: function withCredentials(state) {
-			this._xhr.withCredentials = state !== undefined ? state : false;
-			return this;
-		}
-	}, {
-		key: "off",
-		value: function off(ev, fn) {
-			this._xhr.removeEventListener(ev, fn);
-			return this;
-		}
-	}, {
-		key: "request",
-		value: function request(method, url, async) {
-			this._xhr.open(method, url, async);
-			return this;
-		}
-	}, {
-		key: "send",
-		value: function send(params) {
-			if (params) {
-				this._xhr.send(params);
-			} else {
-				this._xhr.send();
-			}
-			return this;
-		}
-	}]);
-
-	return XHR;
-}();
-
-;
-
-exports.default = XHR;
-
-/***/ }),
-/* 10 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -968,7 +563,7 @@ if (!Array.from) {
 }
 
 /***/ }),
-/* 11 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -981,7 +576,7 @@ if (!String.prototype.includes) {
 }
 
 /***/ }),
-/* 12 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1011,7 +606,7 @@ try {
 module.exports = g;
 
 /***/ }),
-/* 13 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1034,7 +629,7 @@ function extend() {
 }
 
 /***/ }),
-/* 14 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1071,7 +666,7 @@ exports.createElement = createElement;
 exports.makeNode = makeNode;
 
 /***/ }),
-/* 15 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1084,7 +679,7 @@ exports.replaceChildrenByDiff = replaceChildrenByDiff;
 
 var _attrs3 = __webpack_require__(1);
 
-var _extend = __webpack_require__(13);
+var _extend = __webpack_require__(8);
 
 var _getItem2 = __webpack_require__(3);
 
@@ -1218,7 +813,7 @@ function replaceChildrenByDiff(_attrs, _vattrs) {
 };
 
 /***/ }),
-/* 16 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1243,69 +838,7 @@ function _parseString(str) {
 };
 
 /***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-exports.isFrozen = isFrozen;
-exports.freeze = freeze;
-exports.defrost = defrost;
-exports.findObjByProp = findObjByProp;
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-var freezeList = {};
-
-function isFrozen(frozen) {
-	return freezeList[frozen];
-}
-
-function freeze(unfrozen, deep, unfreeze) {
-	if (deep) {
-		Object.getOwnPropertyNames(unfrozen).map(function (name) {
-			var prop = obj[name];
-
-			// Freeze prop if it is an object
-			if ((typeof prop === 'undefined' ? 'undefined' : _typeof(prop)) == 'object' && !isFrozen(prop)) {
-				console.log(prop);
-				freeze(prop, deep, unfreeze);
-			}
-		});
-	}
-	return freezeList[unfrozen] = !unfreeze;
-}
-
-function defrost(frozen, deep) {
-	return freeze(frozen, deep, true);
-}
-
-function findObjByProp(obj, prop) {
-	var find = null,
-	    keys = [].concat(_toConsumableArray(new Map(obj).keys()));
-	keys.map(function (name) {
-		var p = obj.get(name);
-
-		if (p !== undefined && p.get(prop) !== undefined) {
-			find = p.get(prop);
-		} else if (p !== undefined && name === prop) {
-			find = p;
-		}
-
-		return keys;
-	});
-	return find;
-}
-
-/***/ }),
-/* 18 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1314,49 +847,25 @@ function findObjByProp(obj, prop) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.URLComponent = exports.hashURL = exports.XHR = exports.domClass = exports.Data = exports.State = exports.createElement = undefined;
+exports.Tez = undefined;
 
-__webpack_require__(11);
+__webpack_require__(6);
 
-__webpack_require__(10);
+__webpack_require__(5);
 
-var _domClass = __webpack_require__(5);
+var _domClass = __webpack_require__(4);
 
 var _domClass2 = _interopRequireDefault(_domClass);
 
-var _xhr = __webpack_require__(9);
-
-var _xhr2 = _interopRequireDefault(_xhr);
-
-var _hash = __webpack_require__(6);
-
-var _hash2 = _interopRequireDefault(_hash);
-
-var _urlc = __webpack_require__(8);
-
-var _urlc2 = _interopRequireDefault(_urlc);
-
-var _data = __webpack_require__(0);
-
-var _data2 = _interopRequireDefault(_data);
-
-var _state = __webpack_require__(7);
-
-var _state2 = _interopRequireDefault(_state);
-
-var _createElement = __webpack_require__(4);
+var _createElement = __webpack_require__(0);
 
 var _createElement2 = _interopRequireDefault(_createElement);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.createElement = _createElement2.default;
-exports.State = _state2.default;
-exports.Data = _data2.default;
-exports.domClass = _domClass2.default;
-exports.XHR = _xhr2.default;
-exports.hashURL = _hash2.default;
-exports.URLComponent = _urlc2.default;
+var Tez = Object.assign(_domClass2.default, { createElement: _createElement2.default });
+
+exports.Tez = Tez;
 
 /***/ })
 /******/ ]);
