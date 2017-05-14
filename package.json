@@ -69,6 +69,7 @@
     "semantic-release": "latest"
   },
   "scripts": {
+	"test": "npm run build"
     "build": "webpack --env build",
     "source": "webpack --progress --colors --env dev",
     "dist": "npm run source && npm run build",
