@@ -1,6 +1,6 @@
 {
   "name": "tez.js",
-  "version": "9.2.2",
+  "version": "0.0.0-development",
   "description": "Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and DOM Manager",
   "module": "dist/index.js",
   "main": "Tez.js",
@@ -66,13 +66,15 @@
     "eslint-loader": "1.6.1",
     "jshint": "^2.9.4",
     "webpack": "2.2.1",
-    "yargs": "6.6.0"
+    "yargs": "6.6.0",
+    "semantic-release": "^6.3.6"
   },
   "scripts": {
     "build": "webpack --env build",
     "source": "webpack --progress --colors --env dev",
-	"dist": "npm run source && npm run build",
-    "dev": "webpack --progress --colors --watch --env dev"
+    "dist": "npm run source && npm run build",
+    "dev": "webpack --progress --colors --watch --env dev",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": "https://github.com/dalisoft/tez/",
   "author": "dalisoft",
