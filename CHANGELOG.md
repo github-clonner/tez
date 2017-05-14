@@ -1,5 +1,7 @@
 # CHANGELOG
 
+## ALL NEW CHANGELOG GETS AUTOMATED
+
 ## v9.2.3
 fix(travis): update
 
