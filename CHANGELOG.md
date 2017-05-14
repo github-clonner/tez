@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## v9.2.3
+fix(travis): update
+
 ## v9.2.2
 
 ## Fixes
