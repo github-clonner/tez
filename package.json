@@ -74,9 +74,15 @@
     "source": "webpack --progress --colors --env dev",
     "dist": "npm run source && npm run build",
     "dev": "webpack --progress --colors --watch --env dev",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post --owner=dalisoft"
   },
-  "repository": "git+https://github.com/dalisoft/tez/",
+  repository": {
+    "type": "git",
+    "url": "git+https://github.com/dalisoft/tez.git"
+  },
+  "release": {
+    "branch": "master"
+  },
   "author": "dalisoft",
   "license": "Apache-2.0",
   "dependencies": {}
