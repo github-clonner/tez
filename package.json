@@ -75,7 +75,7 @@
     "dev": "webpack --progress --colors --watch --env dev",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
-  "repository": "https://github.com/dalisoft/tez/",
+  "repository": "git+https://github.com/dalisoft/tez/",
   "author": "dalisoft",
   "license": "Apache-2.0",
   "dependencies": {}
