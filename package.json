@@ -76,7 +76,7 @@
     "dev": "webpack --progress --colors --watch --env dev",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post --owner=dalisoft"
   },
-  repository": {
+  "repository": {
     "type": "git",
     "url": "git+https://github.com/dalisoft/tez.git"
   },
