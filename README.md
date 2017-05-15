@@ -1,7 +1,7 @@
 # tez
 [![Tez App][tez-image]][tez-url]
 
-Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function, Component and DOM Manager
+Super-light and blazing-fast application rendering library for simple and re-usable UI components with JSX, HTML DOM Direct and Class support
 
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
@@ -62,7 +62,7 @@ or via [jsdelivr](http://www.jsdelivr.com/) (Thanks to jsdelivr)
 ### Example 1
 
 ```javascript
-var dc = new Tez.domClass('body', { disableSafeParse: true });
+const dc = new Tez('body', { disableSafeParse: true });
 
 	dc.setContent("+=<div id=\"loader\"></div>");
 

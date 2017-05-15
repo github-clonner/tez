@@ -1,7 +1,7 @@
 {
   "name": "tez.js",
   "version": "0.0.0-development",
-  "description": "Lightweight, Flexible, Fast, Memory and Power Effecient Animation, Function and DOM Manager",
+  "description": "Super-light and blazing-fast application rendering library for simple and re-usable UI components with JSX, HTML DOM Direct and Class support",
   "module": "dist/index.js",
   "main": "Tez.js",
   "keywords": [
