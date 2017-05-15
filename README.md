@@ -29,8 +29,9 @@ $ yarn add tez.js
 ```
 
 ### CDN Links
+
 * `<script src="https://cdn.jsdelivr.net/tez.js/latest/Tez.min.js"></script>`
-* Check out at [here](https://cdnjs.com/libraries/tez.js) for `version/release`
+* Check out at [cdnjs version](https://cdnjs.com/libraries/tez.js) for `version/release`
 
 ### Script loading
 
