@@ -1,7 +1,7 @@
 import { attrs } from './attrs';
 import { _parseString } from './str2node';
 import { replaceChildrenByDiff } from './patchDiff';
-import { _makeNode } from './makeNode';
+import { makeNode } from './makeNode';
 import { _getItem } from './getItem';
 import createElement from './createElement';
 
