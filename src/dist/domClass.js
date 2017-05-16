@@ -8,7 +8,7 @@ import createElement from './createElement';
 class domClass {
 	constructor( node, vars = {} ) {
 		this._vars = vars;
-		if ( vars.quickRender === undefined ) {
+		if ( !vars.quickRender ) {
 			vars.quickRender = true;
 		}
 		this._opt = {};
