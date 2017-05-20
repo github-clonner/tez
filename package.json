@@ -62,7 +62,7 @@
     "uglify-js-harmony": "^2.7.7"
   },
   "scripts": {
-    "test": "npm run build",
+    "test": "npm install && npm run build",
     "build": "rollup -c --environment BUILD:prod",
     "source": "rollup -c --sourcemap",
     "dist": "npm run source && npm run build",
