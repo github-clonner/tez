@@ -28,21 +28,11 @@ $ npm install --save tez.js
 $ yarn add tez.js
 ```
 
-### CDN Links
+### CDN Links/Code
 
-* `<script src="https://cdn.jsdelivr.net/tez.js/latest/Tez.min.js"></script>`
-* Check out at [cdnjs version](https://cdnjs.com/libraries/tez.js) for `version/release`
-
-### Script loading
-
-```html
-<script src="https://unpkg.com/tez.js/Tez.min.js"></script>
-```
-
-or via [jsdelivr](http://www.jsdelivr.com/) (Thanks to jsdelivr)
-```html
-<script src="https://cdn.jsdelivr.net/tez.js/latest/Tez.min.js"></script>
-```
+* Thanks to [jsdelivr](http://www.jsdelivr.com/), `<script src="https://cdn.jsdelivr.net/npm/tez.js@latest/Tez.min.js"></script>`
+* Thanks to [unpkg](http://unpkg.com/), `<script src="https://unpkg.com/tez.js@latest/Tez.min.js"></script>`
+* Check out at [cdnjs-hosted library release version](https://cdnjs.com/libraries/tez.js)
 
 # Docs
 * Some docs can be seen at <a href="https://github.com/dalisoft/tez/tree/master/docs">HERE</a>
