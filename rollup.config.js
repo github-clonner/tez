@@ -4,7 +4,7 @@ import { minify } from 'uglify-js-harmony';
 
 const { BUILD } = process.env;
 
-const plugins = [ buble() ];
+const plugins = [ buble({jsx:'Tez.createElement'}) ];
 
 let moduleName = 'Tez';
 let destFile = moduleName;
@@ -21,5 +21,6 @@ export default {
   format: 'umd',
   dest: destFile, // equivalent to --output
   moduleName: moduleName,
+  exports: 'default',
   plugins: plugins
 }

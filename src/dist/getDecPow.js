@@ -1,1 +1,1 @@
-export function getDecPow (d = 4) { return Math.pow(10, d); };
+export default function getDecPow (d = 4) { return Math.pow(10, d); };

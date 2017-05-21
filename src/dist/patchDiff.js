@@ -1,19 +1,10 @@
-import {
-	attrs
-}
-from './attrs';
-import {
-	extend
-}
-from './extend';
-import {
-	_getItem
-}
-from './getItem';
+import attrs from './attrs';
+import extend from './extend';
+import _getItem from './getItem';
 
 const HTMLSyntaxTags = new RegExp("&lt;|&gt;|/>|<|>", "g");
 
-export function replaceChildrenByDiff(_attrs, _vattrs, _childs = [], _childs2 = [], _store = []) {
+export default function replaceChildrenByDiff(_attrs, _vattrs, _childs = [], _childs2 = [], _store = []) {
 	if ( !_attrs || !_vattrs) {
 		return null;
 	}

@@ -1,10 +1,8 @@
-import { ARRAY_SLICE } from './configs';
-
-export function _getItem( item, parent ) {
+export default function _getItem ( item, parent ) {
 	if ( item.isEqualNode( parent ) ) {
 		return item;
 	}
-	const childs = ARRAY_SLICE.call( parent.children );
+	const childs = [... parent.children ];
 	let i = 0;
 	let _match;
 	let _parentWhile;

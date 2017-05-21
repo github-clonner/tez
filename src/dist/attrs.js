@@ -1,4 +1,4 @@
-export function attrs(a) {
+export default function attrs(a) {
 	if ( !(a && a.attributes) )
 		return '{}';
 	const _a = {};

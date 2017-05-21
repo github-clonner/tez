@@ -1,4 +1,4 @@
-const makeNode = opts => {
+export default function makeNode (opts) {
 	if ( !opts || !opts.tag )
 		return;
 	const {
@@ -21,7 +21,3 @@ const makeNode = opts => {
 	}
 	return _tag;
 };
-
-const createElement = makeNode;
-
-export { createElement, makeNode };

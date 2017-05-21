@@ -1,8 +1,11 @@
 import './shim/string_includes'; // warn: this is not-security
 import './shim/array_from'; // warn: this is not-security
-import domClass from './dist/domClass';
+
+import Tez from './dist/domClass';
 import createElement from './dist/createElement';
+import makeNode from './dist/makeNode';
+import Component from './dist/Component';
 
-const Tez = Object.assign(domClass, { createElement });
+const TezGlobal = Object.assign(Tez, { createElement, customElement: makeNode, Component });
 
-export { Tez };
+export default TezGlobal;
