@@ -3,7 +3,6 @@
   "version": "0.0.0-development",
   "description": "Super-light and blazing-fast application rendering library for simple and re-usable UI components with JSX, HTML DOM Direct and Class support",
   "module": "dist/index.js",
-  "main": "Tez.js",
   "keywords": [
     "rendering library",
     "virtual-dom-like",
