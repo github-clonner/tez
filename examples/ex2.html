@@ -54,7 +54,6 @@ var res = cont.querySelector('.result');
 var txt = cont.querySelector('.textarea-1');
 
 const { createElement } = Tez;
-console.log(Tez);
 
 var _res = new Tez(res, { disableSafeParse : true });
 
@@ -76,7 +75,7 @@ class Markup {
 	}
 }
 
-_res.setContent(Markup);
+_res.setContent(new Markup().Render());
 </script>
 </body>
 </html>

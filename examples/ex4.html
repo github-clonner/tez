@@ -23,9 +23,9 @@ html, body {
 }
 .container {
 	width: 100%;
-	height: 100%;
 	overflow: hidden;
 	display: block;
+	background: #fc0;
 }
 
 .textarea-1 {
@@ -35,101 +35,62 @@ html, body {
 </style>
 </head>
 <body>
-<div class="container">
-<textarea class="half textarea-1">
-# hello
-
-* demo is get from <a target="_blank" href="https://vuejs.org/v2/examples/index.html">Vue.js demo</a>
-</textarea>
-<div class="half result">
-</div>
-</div>
-<script src="https://unpkg.com/marked@0.3.6/marked.min.js"></script>
+<div class="container"></div>
+<input type="text" name="text" id="input"/>
 <script src="../Tez.js"></script>
 <script>
 
-const { Data, State, domClass } = Tez;
+const { Component, dom, html, h, linkState } = Tez;
 
-class Counter {
-	constructor (view) {
-		this.onClick = this.onClick.bind(this);
-	}
-	onClick (e) {
-		const { count } = this.props;
-		this.super.setView(this, { count : count + 1 });
-	}
-	init () {
-		this.super.setEvent('click', this.onClick);
+var cont = document.querySelector('.container');
+var input = document.querySelector('#input');
+
+const Count = ({count}) => h('span', null, count);
+
+class Counted extends Component {
+	constructor (props) {
+		super(props);
 	}
 	render () {
-		const { count } = this.props;
-		return `<div>Counted: <span>${ count }</span> times</div>`;
+		return this.props.count;
 	}
 }
 
-class Second {
-	constructor() {
-		this.onSecondChange = this.onSecondChange.bind(this);
-		this.state = new State({
-				countId: 0
-			});
-		this.tick = () => (setInterval(() => {
-				this.onSecondChange();
-			}, 1000));
-		return this;
-	}
-	init() {
-		this.tick();
-		return this;
-	}
-	onSecondChange() {
-		this.state.setState('countId', (prev) => (prev + 1));
-		this.super.setContent(this);
-		return this;
-	}
-	render() {
-		return `Elapsed <span>${ this.state.getState('countId') }</span> seconds`;
-	}
-}
-
-class Button extends Second {
-	constructor(view) {
+class Counter extends Component {
+	constructor () {
 		super();
-		this.props = view.props;
-		this.textExampe = [' was created ', ' seconds before'];
+		this.onClick = this.onClick.bind(this);
+		this.state = { count: 0 };
 	}
-	init() {
-		super.init();
-		this.super.setEvent('click', (e) => {
-			this.textExampe[0] = ' was clicked ';
-			this.state.setState('countId', 0);
-		});
+	onClick (e) {
+		return this.setState({count: this.state.count + 1});
 	}
-	render() {
-		const {
-			attrs = '',
-			value = 'Button',
-			className = '',
-			size = 'tui-default-size',
-			theme = 'tui-default-theme'
-		} = this.props;
-		return `
-		<div 
-		class="
-		tui-button 
-		${ className }
-		${ size } 
-		${ theme } 
-		${ attrs }">
-		${ value }${ this.textExampe[0] }<span>${ this.state.getState('countId') }${ this.textExampe[1] }</span>
-		</div>`
+	render () {
+		const { count } = this.state;
+		return h('div', {'class':'container'}, 'Counted: ', h(Counted, {count}), ' times')//html('<div>Counted: <span>' + count + '</span> times</div>');
 	}
 }
 
-var imm = new domClass('.container');
+class Input extends Component {
+	constructor (props) {
+		super(props);
+		this.state = {value: 'Hello'};
+	}
+	shouldComponentUpdate () {
+		return true;
+	}
+	render () {
+		return html('<div>' + this.state.value + '</div>', this.innerScope);
+	}
+}
 
-	imm.setContent(Button);
-	//imm.setContent(Label, { who : 'World' });
+var c = new Counter();
+var i = new Input();
+
+cont.addEventListener('click', c.onClick);
+input.addEventListener('input', linkState(i, 'value'));
+
+dom(cont, i);
 </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-udo: false
+sudo: false
 language: node_js
 cache:
   directories:
@@ -9,7 +9,3 @@ node_js:
   - "6"
 before_install:
   - npm i -g npm@^2.0.0
-before_script:
-  - npm prune
-after_success:
-  - npm run semantic-release

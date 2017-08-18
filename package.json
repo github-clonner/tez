@@ -1,8 +1,10 @@
 {
   "name": "tez.js",
-  "version": "0.0.0-development",
-  "description": "Super-light and blazing-fast application rendering library for simple and re-usable UI components with JSX, HTML DOM Direct and Class support",
+  "version": "10.0.0",
+  "description": "Lightweight, Clean, Optimized Virtual DOM & UI Library",
   "main": "Tez.js",
+  "cdn": "Tez.min.js",
+  "module": "src/index.js",
   "keywords": [
     "rendering library",
     "virtual-dom-like",
@@ -48,20 +50,15 @@
     "tez.js"
   ],
   "devDependencies": {
-    "rollup": "^0.42.0",
-    "rollup-plugin-buble": "^0.15.0",
-    "rollup-plugin-uglify": "^1.0.2",
-    "rollup-watch": "^3.2.2",
-    "semantic-release": "latest",
-    "uglify-js-harmony": "^2.7.7"
+    "rollup": "^0.45.2",
+    "rollup-plugin-uglify": "^2.0.1"
   },
   "scripts": {
-    "test": "npm run build",
-    "build": "rollup -c --environment BUILD:prod",
-    "source": "rollup -c --sourcemap",
-    "prepublish": "npm run source && npm run build",
-    "dev": "rollup -c -w --sourcemap",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post --owner=dalisoft"
+    "build:production": "rollup -c --environment build:build",
+	"build:watch": "rollup -c -w",
+	"build:development": "rollup -c",
+	"build": "npm run build:development && npm run build:production",
+	"prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",

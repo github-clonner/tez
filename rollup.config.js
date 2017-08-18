@@ -1,26 +1,18 @@
-import buble from 'rollup-plugin-buble';
 import uglify from 'rollup-plugin-uglify';
-import { minify } from 'uglify-js-harmony';
-
-const { BUILD } = process.env;
-
-const plugins = [ buble({jsx:'Tez.createElement'}) ];
-
-let moduleName = 'Tez';
-let destFile = moduleName;
-
-if ( BUILD === 'prod' ) {
-	plugins.push(uglify({}, minify));
-	destFile = moduleName + '.min';
+const { build } = process.env;
+const plugins = [];
+let TezJS = 'Tez';
+if (build === "build") {
+	plugins.push(uglify());
+	TezJS += '.min';
 }
-
-destFile = destFile + '.js';
+TezJS += '.js';
 
 export default {
   entry: 'src/index.js',
+  sourceMap: true,
   format: 'umd',
-  dest: destFile, // equivalent to --output
-  moduleName: moduleName,
-  exports: 'default',
-  plugins: plugins
+  dest: TezJS,
+  moduleName: 'Tez',
+  plugins
 }

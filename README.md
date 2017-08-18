@@ -1,8 +1,12 @@
 # tez
 [![Tez App][tez-image]][tez-url]
 
-Super-light and blazing-fast application rendering library for simple and re-usable UI components with JSX, HTML DOM Direct and Class support
+Lightweight, Clean, Optimized Virtual DOM & UI Library
 
+[![size](http://img.badgesize.io/http://unpkg.com/tez.js?cache=false)](http://unpkg.com/tez.js)
+[![gzipsize](http://img.badgesize.io/http://unpkg.com/tez.js?compression=gzip&cache=false)](http://unpkg.com/tez.js)
+[![CDNJS](https://img.shields.io/cdnjs/v/tez.js.svg)](https://cdnjs.com/libraries/tez.js)
+[![jsdelivr](https://img.shields.io/badge/cdn-jsdelivr-brightgreen.svg)](https://cdn.jsdelivr.net/npm/tez.js)  [![unpkg](https://img.shields.io/badge/cdn-unpkg-brightgreen.svg)](https://unpkg.com/tez.js)  [![npmcdn](https://img.shields.io/badge/cdn-npmcdn-brightgreen.svg)](https://npmcdn.com/tez.js)
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
 [![Travis](https://img.shields.io/travis/dalisoft/tez.svg)](http://github.com/dalisoft/tez)
@@ -12,8 +16,8 @@ Super-light and blazing-fast application rendering library for simple and re-usa
 [![license](https://img.shields.io/github/license/dalisoft/tez.svg)](https://github.com/dalisoft/tez/blob/master/LICENSE)
 [![Flattr this][flattr-image]][flattr-url]
 
-# Note
-Dear users, this is not framework, just library that renders diffed (patched) element. This script inspired by amazing "React" and this script has own diff manager, not uses "VDOM" script.
+# Note!
+Users, Tez.js is alternative fan library to React.js, Preact, Inferno and etc. But this is lightweight and faster than they (load-time and render time), while has no events or feature, if you wish you can do it with PR
 
 # *IMPORTANT*
 * Hello, users. Who using this app, thanks. But i am highly recommend you move to "React.js" for better complexity, if you want simple and lightweight for minimal app, so continue use this app.
@@ -23,16 +27,17 @@ Dear users, this is not framework, just library that renders diffed (patched) el
 ### `npm` or `yarn`
 
 ```bash
-$ npm install --save tez.js
+$ npm install tez.js
 # or
 $ yarn add tez.js
 ```
 
-### CDN Links/Code
+### CDN
 
-* Thanks to [jsdelivr](http://www.jsdelivr.com/), `<script src="https://cdn.jsdelivr.net/npm/tez.js@latest/Tez.min.js"></script>`
-* Thanks to [unpkg](http://unpkg.com/), `<script src="https://unpkg.com/tez.js@latest/Tez.min.js"></script>`
-* Check out at [cdnjs-hosted library release version](https://cdnjs.com/libraries/tez.js)
+* Grab code at [jsdelivr](https://cdn.jsdelivr.net/npm/tez.js)
+* Grab code at [unpkg](https://unpkg.com/tez.js)
+* Grab code at [npmcdn](http://npmcdn.com/tez.js)
+* See release at [cdnjs](https://cdnjs.com/libraries/tez.js)
 
 # Docs
 * Some docs can be seen at <a href="https://github.com/dalisoft/tez/tree/master/docs">HERE</a>
@@ -52,30 +57,50 @@ $ yarn add tez.js
 ### Example 1
 
 ```javascript
-const dc = new Tez('body', { disableSafeParse: true });
+// ES6
+import { Component, DOM, html } from 'tez.js';
+class Hello extends Component {
+	constructor (props) {
+		super(props);
+	}
+	render () {
+		return html(`Hello ${this.props.name}`);
+	}
+}
+DOM(MyDOMNode, new Hello({name:'World'}));
 
-	dc.setContent("+=<div id=\"loader\"></div>");
+// ES6 Basic
+const Hello = ({name}) => `Hello ${name}`
+DOM(MyDOMNode, Hello({name:'World'})
 
-	// Uses appendChild for you, like innerHTML syntax for effective
+// ES5/ES4
+const { Component, DOM, html } = require('tez.js');
+var Hello = function (props) {
+	Component.call(this, props);
+	return this;
+};
+Hello.prototype = Component.prototype;
+Hello.prototype.render = function () {
+	return html(`Hello ${this.props.name}`);
+};
+DOM(MyDOMNode, new Hello({name:'World'}));
 ```
 
-# Methods
-* `createElement` - for `JSX` element creation
+# JSX
+* You can set via `/** @jsx Tez.h */`
+* or set via your transpiler configuration
 
 # Compatibility
+The code runs anywhere as possible due of there now no DOM comparision, just property comparision, it's faster and smarter.
 
-### Note
-This library works nice at IE10+, Chrome 35+, Firefox 35+, Opera 15+ and works partly at starting supported browsers.
-I am recommend you render at page-load so you never see issues. Change interval check at 300-ms for better result
-
-### Supported browsers (UPDATED)
+### Supported browsers
 
 * Android 5+
 * iOS 9+
-* Internet Explorer 11+
+* Internet Explorer 10+
 * Chrome 45+
-* Firefox 40+
-* Opera 18+
+* Firefox 35+
+* Opera 15+
 
 # License
 * Apache 2.0

@@ -1,55 +1,26 @@
 # CHANGELOG
 
-## ALL NEW CHANGELOG GETS AUTOMATED
+# v10
 
-## v9.2.3
-fix(travis): update
-
-## v9.2.2
-
-## Fixes
-* Documentation reduced due of reduced flexibility our js, closes #4
-
-## v9.2.1
-
-## BREAKING CHANGE
-* Deprecated `<Tez method="Data">`, use [SilentData](https://www.npmjs.com/package/silentdata)
-* Deprecated `<Tez method="XHR">`, use [xhr](https://www.npmjs.com/package/xhr) or [node-fetch](https://www.npmjs.com/package/node-fetch)
-* Deprecated `<Tez method="State">`, use [SilentData](https://www.npmjs.com/package/silentdata)
-* Deprecated `<Tez method="Hash">`, use [xhr](https://www.npmjs.com/package/xhr) or [node-fetch](https://www.npmjs.com/package/node-fetch)
-* Deprecated `<Tez method="URLComponent">`, use [navigo](https://github.com/krasimir/navigo) or [riot-route](http://riotjs.com/api/route/)
-
-## New
-* Now `domClass` works as default constructor
-* feat(options): new `disableSafeParse` option for enabling HTML parsing, else it will do only text changing
-
-## Size
-* size slightly reduced
-
-## NOTE
-* if you want `Data` or `State` or etc, please see `5.x.x` or `2.x.x`
-
-## v5.1.3
-
-## BREAKING CHANGE
-* deprecated(tezClass): you can now use `domClass` with components to achieve that
-* deprecated(polyfills): starting at *v4.0.0*, `tez.js` doesn't provides support to IE<11 and older browsers
-* deprecated(managers): managers removed due of less usage, so i removed it. if you need that, you can look at `v2.x.x`
-
-## Fixes
-* fix(yarn): deps updated
-* fix(core): `Tez.Data` fixed and improved
-
-## New
-* feat(core::state): New `Tez.State` for super-stateful components
+## Breaking change
+* Using `Virtual Tree` instead of `Real DOM Tree` as it's almost 5-times faster
+* Refactored (almost 10-times, locally) code
+* Using Real Valid HTML Code via `Tez.html`
 
 ## Improvements
-* improved(core): `Tez.Data` improved
+* Reduced package size
+* Increase init time
+* Performance drastically improved (5-times faster)
+* Simplified diffing (refactored much time)
+* No trash object or arrays
+* Memory usage reduced 3-5 times
+* Optimized code runs and executes faster
 
-## Size
-* size slightly, almost `2x` lesser size
+## Features
+* Legaly browsers support
+* Back to IE8 support (some polyfill requires)
+* No ES6 syntax (just exports with it)
+* ES6 and ES5 class support (even possible use classes in ES3 browsers)
 
 
-
-## NOTE
-CHANGELOG starts at *v5.x.x*
+### All old changelogs, see at GitHub repo releases or at v9.x CHANGELOG.md

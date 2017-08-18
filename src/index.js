@@ -1,11 +1,7 @@
-import './shim/string_includes'; // warn: this is not-security
-import './shim/array_from'; // warn: this is not-security
+import VPatch from './vpatch';
+import VHyper, { VText, VAttr } from './vhyper';
+import VNode from './vnode';
+import VHtml from './vhtml';
+import { Component, DOM, linkState } from './vcomponent';
 
-import Tez from './dist/domClass';
-import createElement from './dist/createElement';
-import makeNode from './dist/makeNode';
-import Component from './dist/Component';
-
-const TezGlobal = Object.assign(Tez, { createElement, customElement: makeNode, Component });
-
-export default TezGlobal;
+export { VPatch as patch, VHyper as h, VText as text, VAttr as attr, VNode as node, VHtml as html, Component, DOM as dom, linkState };
