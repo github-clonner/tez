@@ -1,6 +1,6 @@
 {
   "name": "tez.js",
-  "version": "10.0.0",
+  "version": "10.0.1",
   "description": "Lightweight, Clean, Optimized Virtual DOM & UI Library",
   "main": "Tez.js",
   "cdn": "Tez.min.js",
@@ -50,8 +50,9 @@
     "tez.js"
   ],
   "devDependencies": {
-    "rollup": "^0.45.2",
-    "rollup-plugin-uglify": "^2.0.1"
+    "rollup": "latest",
+    "rollup-plugin-uglify": "latest",
+	"rollup-watch": "latest"
   },
   "scripts": {
     "build:production": "rollup -c --environment build:build",
